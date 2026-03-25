@@ -1,82 +1,344 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        header {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 1rem;
-        }
-        section {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 1rem;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: #333;
-        }
-        .project {
-            margin-bottom: 1rem;
-        }
-        footer {
-            text-align: center;
-            padding: 1rem;
-            background-color: #333;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sania Jamil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafafa;
+      --text: #111;
+      --muted: #666;
+      --border: #e5e5e5;
+      --accent: #111;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+    a:hover { color: var(--muted); }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* NAV */
+    nav {
+      padding: 32px 0 0;
+    }
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav .name {
+      font-weight: 500;
+      font-size: 15px;
+      text-decoration: none;
+    }
+    nav .links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    nav .links a {
+      color: var(--muted);
+      font-size: 13px;
+      text-decoration: none;
+    }
+    nav .links a:hover { color: var(--text); }
+
+    /* HERO */
+    .hero {
+      padding: 80px 0 64px;
+    }
+    .hero h1 {
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+      margin-bottom: 16px;
+    }
+    .hero p {
+      color: var(--muted);
+      max-width: 480px;
+      font-size: 15px;
+    }
+
+    /* SECTION */
+    section {
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+    }
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    /* FEED */
+    .feed {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .feed-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 0 20px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-date {
+      font-size: 12px;
+      color: var(--muted);
+      padding-top: 2px;
+    }
+    .feed-content {}
+    .feed-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .feed-desc {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      background: #f0f0f0;
+      color: #555;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-top: 8px;
+    }
+
+    /* PROJECTS */
+    .projects {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .project-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .project-item:last-child { border-bottom: none; }
+    .project-name {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .project-name a { text-decoration: none; }
+    .project-name a:hover { text-decoration: underline; }
+    .project-desc {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .project-stack {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 6px;
+    }
+    .project-link {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      white-space: nowrap;
+      padding-top: 2px;
+    }
+    .project-link:hover { color: var(--text); }
+
+    /* CONTACT */
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .contact-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 20px;
+      font-size: 14px;
+    }
+    .contact-row .label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 32px 0 48px;
+      border-top: 1px solid var(--border);
+    }
+    footer p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Sania Khushbakht Jamil</h1>
-        <p>Software Developer | Creative Thinker</p>
-    </header>
 
-    <section id="about">
-        <h2>About Me</h2>
-        <p>Welcome to my portfolio! I'm a passionate software developer with experience in various technologies. This is a simple test portfolio to demonstrate deployment.</p>
+  <nav>
+    <div class="container">
+      <span class="name">Sania Jamil</span>
+      <ul class="links">
+        <li><a href="#building">Building</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="hero">
+      <h1>Software developer,<br/>building things with AI.</h1>
+      <p>I work across the stack — Python, TypeScript, React — with a focus on AI-assisted tools and developer utilities. Open to new opportunities.</p>
+    </div>
+
+    <!-- FEED: what I'm working on -->
+    <section id="building">
+      <p class="section-label">Currently building</p>
+      <div class="feed">
+
+        <div class="feed-item">
+          <span class="feed-date">Mar 2026</span>
+          <div class="feed-content">
+            <div class="feed-title">JobHunter — AI job hunting agent</div>
+            <div class="feed-desc">LangGraph-based agent that searches, scores, and applies to jobs autonomously. Slack integration for human-in-the-loop approval before submitting applications.</div>
+            <span class="tag">Python · LangGraph · Claude API · Playwright</span>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <span class="feed-date">Feb 2026</span>
+          <div class="feed-content">
+            <div class="feed-title">RiffMaster — AI guitar tab generator</div>
+            <div class="feed-desc">Full-stack TypeScript monorepo. Enter a song and artist, get beginner-friendly guitar tabs back via a 3-step AI pipeline (analysis → composition → guitarisation).</div>
+            <span class="tag">React · Node.js · TypeScript · Docker</span>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <span class="feed-date">Jan 2026</span>
+          <div class="feed-content">
+            <div class="feed-title">TeachMeEasy — guitar learning app</div>
+            <div class="feed-desc">Simplifies chord sheet PDFs into 3 difficulty levels (Beginner → Intermediate → Pro) with a section-by-section Learn mode and auto-scrolling Play mode with BPM control.</div>
+            <span class="tag">Python · Home server · Claude API</span>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <span class="feed-date">Dec 2025</span>
+          <div class="feed-content">
+            <div class="feed-title">TabScrub — Ultimate Guitar PDF scraper</div>
+            <div class="feed-desc">Node.js CLI to bulk-download chord/tab PDFs from Ultimate Guitar with session auth, duplicate detection, resume support, and a browser-based stats dashboard.</div>
+            <span class="tag">Node.js · Playwright · Web scraping</span>
+          </div>
+        </div>
+
+      </div>
     </section>
 
+    <!-- PROJECTS -->
     <section id="projects">
-        <h2>Projects</h2>
-        <div class="project">
-            <h3>Project 1</h3>
-            <p>A brief description of the first project.</p>
+      <p class="section-label">Projects</p>
+      <div class="projects">
+
+        <div class="project-item">
+          <div>
+            <div class="project-name">
+              <a href="https://github.com/saniakhushbakhtjamil/jobhunter" target="_blank" rel="noopener">JobHunter</a>
+            </div>
+            <div class="project-desc">Autonomous AI agent for job searching and application submission with Slack approval workflow.</div>
+            <div class="project-stack">Python · LangGraph · Claude · Slack</div>
+          </div>
+          <a class="project-link" href="https://github.com/saniakhushbakhtjamil/jobhunter" target="_blank" rel="noopener">↗ GitHub</a>
         </div>
-        <div class="project">
-            <h3>Project 2</h3>
-            <p>A brief description of the second project.</p>
+
+        <div class="project-item">
+          <div>
+            <div class="project-name">
+              <a href="https://github.com/saniakhushbakhtjamil/riffmaster" target="_blank" rel="noopener">RiffMaster</a>
+            </div>
+            <div class="project-desc">AI-assisted guitar tab generator with a full-stack TypeScript monorepo, Redis caching, and Docker deployment.</div>
+            <div class="project-stack">React · Node.js · TypeScript · Docker · Redis</div>
+          </div>
+          <a class="project-link" href="https://github.com/saniakhushbakhtjamil/riffmaster" target="_blank" rel="noopener">↗ GitHub</a>
         </div>
+
+        <div class="project-item">
+          <div>
+            <div class="project-name">
+              <a href="https://github.com/saniakhushbakhtjamil/teachMeEasy" target="_blank" rel="noopener">TeachMeEasy</a>
+            </div>
+            <div class="project-desc">Guitar learning app that converts complex chord sheets into three difficulty levels with learn and play modes.</div>
+            <div class="project-stack">Python · Claude API · Home server</div>
+          </div>
+          <a class="project-link" href="https://github.com/saniakhushbakhtjamil/teachMeEasy" target="_blank" rel="noopener">↗ GitHub</a>
+        </div>
+
+        <div class="project-item">
+          <div>
+            <div class="project-name">
+              <a href="https://github.com/saniakhushbakhtjamil/TabScrub" target="_blank" rel="noopener">TabScrub</a>
+            </div>
+            <div class="project-desc">CLI scraper for Ultimate Guitar with session auth, bulk download, duplicate detection, and analytics dashboard.</div>
+            <div class="project-stack">Node.js · Playwright</div>
+          </div>
+          <a class="project-link" href="https://github.com/saniakhushbakhtjamil/TabScrub" target="_blank" rel="noopener">↗ GitHub</a>
+        </div>
+
+      </div>
     </section>
 
+    <!-- CONTACT -->
     <section id="contact">
-        <h2>Contact</h2>
-        <p>Email: your.email@example.com</p>
-        <p>LinkedIn: <a href="#">Your LinkedIn</a></p>
-        <p>GitHub: <a href="https://github.com/saniakhushbakhtjamil">saniakhushbakhtjamil</a></p>
+      <p class="section-label">Contact</p>
+      <div class="contact-links">
+        <div class="contact-row">
+          <span class="label">GitHub</span>
+          <a href="https://github.com/saniakhushbakhtjamil" target="_blank" rel="noopener">saniakhushbakhtjamil</a>
+        </div>
+        <div class="contact-row">
+          <span class="label">LinkedIn</span>
+          <a href="#" target="_blank" rel="noopener">Sania Khushbakht Jamil</a>
+        </div>
+        <div class="contact-row">
+          <span class="label">Email</span>
+          <a href="mailto:your.email@example.com">your.email@example.com</a>
+        </div>
+      </div>
     </section>
 
-    <footer>
-        <p>&copy; 2026 Sania Khushbakht Jamil. All rights reserved.</p>
-    </footer>
+  </div>
 
-    <script>
-        // Simple JS for interactivity
-        console.log("Portfolio loaded!");
-    </script>
+  <footer>
+    <div class="container">
+      <p>Sania Khushbakht Jamil &mdash; 2026</p>
+    </div>
+  </footer>
+
 </body>
 </html>
