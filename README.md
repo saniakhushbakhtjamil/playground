@@ -15,6 +15,7 @@ Personal portfolio and project feed. Live at [saniajamil.com](https://saniajamil
 - Nginx (Docker) — serves the files
 - Cloudflare Tunnel — public access without port forwarding, free SSL
 - GitHub Actions (self-hosted runner) — auto-deploys on every push
+- Umami — self-hosted analytics at `analytics.saniajamil.com`
 
 ## Infrastructure
 
@@ -23,6 +24,8 @@ Mac (dev)
   → GitHub
     ├── push to main     → Runner → git pull → nginx restart (if needed) → saniajamil.com
     └── push to staging  → Runner → git pull → nginx-staging restart     → staging.saniajamil.com
+
+Umami analytics → analytics.saniajamil.com (always on, same server)
 ```
 
 ## CI/CD Pipeline
@@ -53,6 +56,7 @@ sequenceDiagram
     CF->>Docker: routes via Cloudflare Tunnel
     Note over Docker: nginx → saniajamil.com<br/>nginx-staging → staging.saniajamil.com
     Docker->>Visitor: serves portfolio
+    Docker->>Docker: umami records the visit
 ```
 
 ## Docker containers
@@ -62,6 +66,8 @@ sequenceDiagram
 | `playground-nginx-1` | nginx:alpine | Serves production files |
 | `playground-nginx-staging-1` | nginx:alpine | Serves staging files |
 | `playground-cloudflared-1` | cloudflare/cloudflared | Cloudflare Tunnel |
+| `playground-umami-1` | umami:postgresql-latest | Analytics dashboard |
+| `playground-umami-db-1` | postgres:15-alpine | Umami database |
 
 ## Server setup
 
@@ -69,6 +75,13 @@ sequenceDiagram
 - GitHub Actions self-hosted runner (runs as a scheduled task, starts on boot)
 - Production files served from the `main` branch clone
 - Staging files served from the `staging` branch clone
+
+## Branch rules
+
+| Change type | Branch |
+|-------------|--------|
+| Content (`index.html`, `resume.pdf`, copy) | `staging` first, then merge to `main` |
+| Infrastructure (`docker-compose.yml`, nginx, workflows) | `main` directly |
 
 ## Adding a new app
 
