@@ -1,26 +1,36 @@
-# playground
-My playground to share my random ideas
+# saniajamil.com
 
-## Portfolio Website
+Personal portfolio and project feed. Live at [saniajamil.com](https://saniajamil.com).
 
-This is a simple portfolio website created for testing deployment.
+## Stack
 
-### View Locally
+- Static HTML/CSS — no frameworks
+- Nginx (Docker) — serves the files
+- Cloudflare Tunnel — public access without port forwarding
+- GitHub Actions (self-hosted runner) — auto-deploys on push to `main`
 
-Open `index.html` in your browser to view the site.
+## CI/CD Pipeline
 
-### Deployment
+```mermaid
+sequenceDiagram
+    participant You as You (Mac)
+    participant GitHub
+    participant Runner as GitHub Actions Runner (Windows)
+    participant Docker as Docker (Windows)
+    participant CF as Cloudflare
+    participant Visitor
 
-This static site can be deployed to platforms like:
-- GitHub Pages
-- Netlify
-- Vercel
+    You->>GitHub: git push origin main
+    GitHub->>Runner: trigger deploy job
+    Runner->>Runner: git pull origin main
+    Runner->>Docker: docker compose restart nginx
+    Docker->>Docker: nginx reloads with new files
 
-For GitHub Pages:
-1. Go to repository settings
-2. Scroll to Pages section
-3. Select "Deploy from a branch"
-4. Choose "main" branch and "/ (root)" folder
-5. Save
+    Visitor->>CF: visits saniajamil.com
+    CF->>Docker: routes via Cloudflare Tunnel
+    Docker->>Visitor: serves portfolio
+```
 
-The site will be available at `https://saniakhushbakhtjamil.github.io/playground/`
+## Local development
+
+Open `index.html` in your browser.
