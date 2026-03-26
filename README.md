@@ -35,8 +35,14 @@ sequenceDiagram
     You->>GitHub: git push origin main
     GitHub->>Runner: trigger deploy job
     Runner->>Runner: git pull origin main
-    Runner->>Docker: docker compose restart nginx
-    Docker->>Docker: nginx reloads with new files
+
+    alt nginx/nginx.conf changed
+        Runner->>Docker: docker compose restart nginx
+    else docker-compose.yml changed
+        Runner->>Docker: docker compose up -d
+    else HTML/assets changed
+        Runner->>Runner: no restart needed, files live instantly
+    end
 
     Visitor->>CF: visits saniajamil.com
     CF->>Docker: routes via Cloudflare Tunnel
