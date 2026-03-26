@@ -13,10 +13,33 @@ services:
       - ../staging:/usr/share/nginx/html/staging:ro
     restart: unless-stopped
 
+  umami-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: umami_password
+    volumes:
+      - umami-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    environment:
+      DATABASE_URL: postgresql://umami:umami_password@umami-db:5432/umami
+      APP_SECRET: change_this_to_a_random_secret
+    depends_on:
+      - umami-db
+    restart: unless-stopped
+
   cloudflared:
     image: cloudflare/cloudflared:latest
     command: tunnel --no-autoupdate run --token eyJhIjoiM2ZhNjQ0ZWRiNjc5OWIwNDNiMzNmODgwMTFmNGNmYTIiLCJ0IjoiNzE1MmQ5M2MtYjA5Yi00OGMzLWI3ZjItMTNlYTY3ZTJhNjBlIiwicyI6IllXTTJPR1UzT0RjdE1HTmhaaTAwWlRNNUxXRTJOekV0Wm1FeE9UazFZVGhpTWpVeiJ9
     depends_on:
       - nginx
       - nginx-staging
+      - umami
     restart: unless-stopped
+
+volumes:
+  umami-db-data:
