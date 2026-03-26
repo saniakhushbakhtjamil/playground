@@ -16,5 +16,22 @@ jobs:
       - name: Pull latest changes
         run: git pull origin main
 
-      - name: Restart nginx
-        run: docker compose restart nginx
+      - name: Restart nginx (if config changed)
+        run: |
+          $changed = git diff HEAD~1 --name-only
+          if ($changed -match "nginx/nginx.conf") {
+            docker compose restart nginx
+            Write-Host "nginx.conf changed — restarted nginx"
+          } else {
+            Write-Host "No nginx config change — skipping restart"
+          }
+
+      - name: Recreate containers (if docker-compose changed)
+        run: |
+          $changed = git diff HEAD~1 --name-only
+          if ($changed -match "docker-compose.yml") {
+            docker compose up -d
+            Write-Host "docker-compose.yml changed — recreated containers"
+          } else {
+            Write-Host "No compose change — skipping"
+          }
