@@ -65,12 +65,10 @@ sequenceDiagram
 
 ## Server setup
 
-- Windows home server at `192.168.50.11`
-- Docker Desktop with WSL enabled
-- GitHub Actions runner at `C:\Users\Hello\actions-runner\actions-runner`
-- Runner runs as a Windows scheduled task (starts on boot, no terminal needed)
-- Production files at `C:\Users\Hello\home_server\playground` (main branch)
-- Staging files at `C:\Users\Hello\home_server\staging` (staging branch)
+- Windows home server running Docker Desktop with WSL
+- GitHub Actions self-hosted runner (runs as a scheduled task, starts on boot)
+- Production files served from the `main` branch clone
+- Staging files served from the `staging` branch clone
 
 ## Adding a new app
 
