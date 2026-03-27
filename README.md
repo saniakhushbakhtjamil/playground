@@ -88,9 +88,15 @@ sequenceDiagram
 To host a new app at a subdomain (e.g. `app.saniajamil.com`):
 
 1. Add a new service to `docker-compose.yml`
-2. Add a new config file in `nginx/`
-3. Add a new public hostname in Cloudflare Zero Trust → Tunnels → `home-server`
+2. Add a new config file in `nginx/` (if nginx-based)
+3. In Cloudflare Zero Trust → Networks → Tunnels → `home-server` → Routes → Add route → Published application → set destination and service URL
 4. Run `docker compose up -d` on the server
+
+## Troubleshooting
+
+**Subdomains return 502 after a deploy**
+
+Happens when `docker-compose.yml` changes trigger a cloudflared restart. Cloudflare briefly caches the 502s from the ~30 second reconnect window. Fix: wait 2-3 minutes and reload. If it persists, go to Cloudflare → saniajamil.com → Caching → Purge Cache → Purge Everything. For persistent cache issues, enable Development Mode (Caching → Configuration) — it bypasses all caching for 3 hours.
 
 ## Security
 
