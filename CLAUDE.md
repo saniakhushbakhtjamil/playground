@@ -32,11 +32,20 @@
 - Motifs: Medallion (phool), OrnamentStrip (triangle bands), SnowFloral, TriangleBand — `src/components/motifs.tsx`
 - Font: Geist Mono Variable
 
-### Vite 8 / rolldown gotcha — CRITICAL
-Rolldown enforces strict ES module named exports at runtime. TypeScript interfaces and type aliases compile away, so:
+### Known gotchas
+
+**Vite 8 / rolldown — CRITICAL**
+Rolldown enforces strict ES module named exports at runtime. TypeScript interfaces and type aliases compile away to nothing, so importing them as values causes a silent blank page:
 - **Always use `import type { Foo }` for interfaces, type aliases, and enums**
-- Never use inline `import('...').TypeName` in type positions — rolldown may treat it as a runtime dynamic import
-- This affects all files: `api/index.ts`, `pages/Board.tsx`, `pages/Docs.tsx`, `lib/rung/engine.ts`, `lib/rung/ai.ts`, etc.
+- Never use inline `import('...').TypeName` in type positions — rolldown treats it as a runtime dynamic import
+- Affects: `api/index.ts`, `pages/Board.tsx`, `pages/Docs.tsx`, `lib/rung/engine.ts`, `lib/rung/ai.ts`, etc.
+
+**Docker / tsc strict mode vs local dev**
+The Dockerfile runs `tsc` with full strictness. Local `vite dev` is more lenient. Known issues hit in production build:
+- `node:sqlite` `.get()` returns `Record<string, SQLOutputValue> | undefined` — cast via `as unknown as YourType`, not directly
+- `Array.reduce` on typed union arrays (e.g. `PlayerIndex[]`) — always annotate the accumulator: `reduce<number>(..., 0)`
+- SQLite booleans are `0 | 1` integers, not `boolean` — match your form state types accordingly (e.g. `is_default: 0` not `false`)
+- Discriminated union property access — use `'prop' in obj` guard, not `obj.prop ?? fallback`
 
 ### Feature: Rupee wallet
 - Earn ₨ by doing job-hunt actions (log job +10, advance status +15, interview +50, offer +200)
@@ -94,6 +103,18 @@ cd apps/jobhunt/server && npm run dev
 # Terminal 2 — client on :5173 (proxied to :3001)
 cd apps/jobhunt/client && npm run dev
 ```
+
+### Deploy to almari
+```bash
+# From local Mac — push, pull on server, rebuild container
+git push origin main
+ssh almari "cd ~/home_server/playground && git pull && docker compose up -d --build jobhunt"
+
+# Reload nginx if nginx.conf changed
+ssh almari "docker exec playground-nginx-1 nginx -s reload"
+```
+
+> **Access**: add `127.0.0.1 job.almari` to `/etc/hosts` on each local machine, then visit http://job.almari
 
 ## Common commands
 ```bash
