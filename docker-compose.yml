@@ -1,4 +1,12 @@
 services:
+  jobhunt:
+    build:
+      context: ./apps/jobhunt
+      dockerfile: Dockerfile
+    volumes:
+      - jobhunt-data:/app/data
+    restart: unless-stopped
+
   nginx:
     image: nginx:alpine
     volumes:
@@ -43,3 +51,4 @@ services:
 
 volumes:
   umami-db-data:
+  jobhunt-data:
