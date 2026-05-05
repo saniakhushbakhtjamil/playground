@@ -5,6 +5,16 @@ services:
       dockerfile: Dockerfile
     volumes:
       - jobhunt-data:/app/data
+    networks:
+      - default
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.naukri.rule=Host(`naukri.almari`)
+      - traefik.http.routers.naukri.entrypoints=websecure
+      - traefik.http.routers.naukri.tls=true
+      - traefik.http.services.naukri.loadbalancer.server.port=3001
     restart: unless-stopped
 
   nginx:
@@ -52,3 +62,7 @@ services:
 volumes:
   umami-db-data:
   jobhunt-data:
+
+networks:
+  traefik-public:
+    external: true
