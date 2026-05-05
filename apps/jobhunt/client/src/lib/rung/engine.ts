@@ -36,7 +36,7 @@ export interface GameState {
 }
 
 export function teamTricks(state: GameState, team: PlayerIndex[]): number {
-  return team.reduce((s, p) => s + state.tricksWon[p], 0);
+  return team.reduce<number>((s, p) => s + state.tricksWon[p], 0);
 }
 
 export function initGame(bet: number): GameState {

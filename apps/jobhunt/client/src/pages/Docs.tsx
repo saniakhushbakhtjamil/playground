@@ -30,7 +30,7 @@ function DocCard({ doc, onDelete }: { doc: JobDocument | CvVersion; onDelete: ()
       >
         <Icon size={15} className="text-violet-400 shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-zinc-100 truncate">{doc.name ?? (doc as JobDocument).title}</p>
+          <p className="text-sm font-medium text-zinc-100 truncate">{"name" in doc ? doc.name : doc.title}</p>
           <p className="text-xs text-zinc-500">
             {"type" in doc ? TYPE_LABELS[doc.type as DocumentType] : "CV"} ·{" "}
             {new Date(doc.created_at).toLocaleDateString()}
@@ -123,7 +123,7 @@ function AddDocModal({ onClose, onAdd }: { onClose: () => void; onAdd: (doc: Job
 }
 
 function AddCvModal({ onClose, onAdd }: { onClose: () => void; onAdd: (cv: CvVersion) => void }) {
-  const [form, setForm] = useState({ name: "", content: "", is_default: false });
+  const [form, setForm] = useState({ name: "", content: "", is_default: 0 });
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -168,8 +168,8 @@ function AddCvModal({ onClose, onAdd }: { onClose: () => void; onAdd: (cv: CvVer
           <label className="flex items-center gap-2 text-sm text-zinc-400 cursor-pointer">
             <input
               type="checkbox"
-              checked={form.is_default}
-              onChange={(e) => setForm((f) => ({ ...f, is_default: e.target.checked }))}
+              checked={form.is_default === 1}
+              onChange={(e) => setForm((f) => ({ ...f, is_default: e.target.checked ? 1 : 0 }))}
               className="accent-violet-500"
             />
             Set as default CV

@@ -49,7 +49,7 @@ function updateStreak(wallet: WalletRow): { streak: number; multiplier: number; 
 
 // GET /api/wallet
 router.get("/", (_req: Request, res: Response) => {
-  const wallet = db.prepare("SELECT * FROM wallet WHERE id = 1").get() as WalletRow;
+  const wallet = db.prepare("SELECT * FROM wallet WHERE id = 1").get() as unknown as WalletRow;
   const { streak, multiplier } = updateStreak(wallet);
   res.json({ balance: wallet.balance, streak, multiplier });
 });
@@ -62,7 +62,7 @@ router.post("/earn", (req: Request, res: Response) => {
     return;
   }
 
-  const wallet = db.prepare("SELECT * FROM wallet WHERE id = 1").get() as WalletRow;
+  const wallet = db.prepare("SELECT * FROM wallet WHERE id = 1").get() as unknown as WalletRow;
   const { streak, multiplier, checkinEarned } = updateStreak(wallet);
 
   // Base earn for the action
@@ -101,7 +101,7 @@ router.post("/rung", (req: Request, res: Response) => {
     return;
   }
 
-  const wallet = db.prepare("SELECT * FROM wallet WHERE id = 1").get() as WalletRow;
+  const wallet = db.prepare("SELECT * FROM wallet WHERE id = 1").get() as unknown as WalletRow;
   const delta = won ? bet : -bet;
   const newBalance = Math.max(0, wallet.balance + delta);
 
