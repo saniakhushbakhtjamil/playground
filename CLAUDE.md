@@ -12,9 +12,14 @@
 ## Cloudflare
 - Tunnel name: `home-server`
 - Tunnel ID: `7152d93c-b09b-48c3-b7f2-13ea67e2a60e`
+- Tunnel token: lives in `.env` on almari (`CLOUDFLARE_TUNNEL_TOKEN`), referenced from `docker-compose.yml`. `.env` is gitignored — see `.env.example` for the variable name.
 - Production hostname: `saniajamil.com → http://nginx:80`
 - Staging hostname: `staging.saniajamil.com → http://nginx-staging:80`
 - Analytics hostname: `analytics.saniajamil.com → http://umami:3000`
+
+## Tech debt — do later
+- **Rotate & externalise remaining cleartext secrets in `docker-compose.yml`**: `umami-db` `POSTGRES_PASSWORD` (line 39) and `umami` `APP_SECRET` (line 48) are still hardcoded. Move both to `.env` on almari (same pattern as `CLOUDFLARE_TUNNEL_TOKEN`) and reference via `${VAR}` in compose. Note: rotating `APP_SECRET` invalidates existing umami sessions; rotating the DB password requires updating both `umami-db` env and the `DATABASE_URL` in `umami` env in lockstep.
+- **Scrub old Cloudflare tunnel token from git history**: token at the pre-rotation `docker-compose.yml:55` is invalidated but still in history. Use `git filter-repo` and force-push if/when we want it gone.
 
 ## Job Hunt App — "naukri" (naukri.almari)
 - Local-only, not exposed via Cloudflare
