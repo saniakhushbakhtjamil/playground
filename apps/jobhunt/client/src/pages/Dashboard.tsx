@@ -1,0 +1,138 @@
+import { useEffect, useState } from "react";
+import { getStats } from "../api";
+import type { Stats, JobStatus } from "../types";
+import { Briefcase, TrendingUp, Star, Clock } from "lucide-react";
+import { OrnamentStrip, SnowFloral } from "../components/motifs";
+import { useTheme } from "../context/ThemeContext";
+
+const STATUS_LABELS: Record<JobStatus, string> = {
+  saved: "Saved", applying: "Applying", applied: "Applied",
+  interview: "Interview", offer: "Offer", closed: "Closed",
+};
+
+export default function Dashboard() {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const t = useTheme();
+
+  useEffect(() => { getStats().then(setStats).catch(console.error); }, []);
+
+  const mono = { fontFamily: "'Geist Mono Variable', monospace" } as const;
+  const labelStyle = { ...mono, fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: t.muted, fontWeight: 500 };
+  const card = { background: t.card, border: `1px solid ${t.border}`, borderRadius: 6 };
+
+  const STATUS_COLORS: Record<JobStatus, string> = {
+    saved: t.muted,
+    applying: t.cool,
+    applied: t.cool,
+    interview: t.accent,
+    offer: t.ok,
+    closed: t.ornInk,
+  };
+
+  const statuses: JobStatus[] = ["saved", "applying", "applied", "interview", "offer", "closed"];
+
+  if (!stats) {
+    return (
+      <div style={{ padding: 32, ...mono, fontSize: 12, color: t.muted }}>loading…</div>
+    );
+  }
+
+  return (
+    <div style={{ minHeight: '100%', background: t.bg }}>
+      {/* Page header */}
+      <div style={{ padding: '28px 32px 0' }}>
+        <p style={{ ...mono, fontSize: 10, color: t.muted, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 4 }}>
+          overview
+        </p>
+        <h1 style={{ ...mono, fontSize: 22, fontWeight: 600, color: t.fg, letterSpacing: '-0.02em', lineHeight: 1 }}>
+          Dashboard
+        </h1>
+      </div>
+      <div style={{ marginTop: 16 }}>
+        <OrnamentStrip height={24} palette={{ ink: t.ornInk, warm: t.warm, cool: t.cool, accent: t.accent }} />
+      </div>
+
+      <div style={{ padding: '28px 32px', maxWidth: 960, margin: '0 auto' }}>
+
+        {/* Stat cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 32 }}>
+          {[
+            { label: 'Total tracked', value: stats.total, icon: Briefcase, color: t.cool },
+            { label: 'Interviews', value: stats.byStatus.interview ?? 0, icon: TrendingUp, color: t.accent },
+            { label: 'Offers', value: stats.byStatus.offer ?? 0, icon: Star, color: t.ok },
+            { label: 'Avg match', value: stats.avgMatchScore !== null ? `${stats.avgMatchScore}%` : '—', icon: TrendingUp, color: t.warm },
+          ].map(({ label, value, icon: Icon, color }) => (
+            <div key={label} style={{ ...card, padding: '16px 18px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+              <div style={{ padding: 7, borderRadius: 5, background: color + '20', flexShrink: 0 }}>
+                <Icon size={15} color={color} />
+              </div>
+              <div>
+                <p style={{ ...mono, fontSize: 26, fontWeight: 500, color: t.fg, letterSpacing: '-0.03em', lineHeight: 1 }}>{value}</p>
+                <p style={{ ...labelStyle, marginTop: 4 }}>{label}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Pipeline */}
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+            <SnowFloral size={10} color={t.warm} />
+            pipeline
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {statuses.map(s => (
+              <div key={s} style={{ ...card, flex: 1, padding: '14px 12px', textAlign: 'center' }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: STATUS_COLORS[s], margin: '0 auto 8px' }} />
+                <p style={{ ...mono, fontSize: 22, fontWeight: 500, color: t.fg, lineHeight: 1, letterSpacing: '-0.02em' }}>
+                  {stats.byStatus[s] ?? 0}
+                </p>
+                <p style={{ ...labelStyle, marginTop: 4, fontSize: 9 }}>{STATUS_LABELS[s]}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent activity */}
+        <div>
+          <div style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+            <SnowFloral size={10} color={t.cool} />
+            recent activity
+          </div>
+          <div style={{ ...card }}>
+            {stats.recentActivity.length === 0 && (
+              <p style={{ padding: '20px 18px', ...mono, fontSize: 12, color: t.muted }}>No activity yet.</p>
+            )}
+            {stats.recentActivity.map((job, i) => (
+              <div key={job.id} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '12px 18px',
+                borderBottom: i < stats.recentActivity.length - 1 ? `1px solid ${t.borderSubtle}` : 'none',
+              }}>
+                <div>
+                  <p style={{ ...mono, fontSize: 13, fontWeight: 500, color: t.fg }}>{job.title}</p>
+                  <p style={{ ...mono, fontSize: 11, color: t.muted, marginTop: 2 }}>{job.company}</p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{
+                    ...mono, fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase',
+                    padding: '3px 8px', borderRadius: 3,
+                    background: STATUS_COLORS[job.status as JobStatus] + '20',
+                    color: STATUS_COLORS[job.status as JobStatus],
+                  }}>
+                    {STATUS_LABELS[job.status as JobStatus]}
+                  </span>
+                  <span style={{ ...mono, fontSize: 10, color: t.ornInk, display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Clock size={10} />
+                    {new Date(job.updated_at).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}

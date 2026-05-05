@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist-mono";
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  width: 100%;
+  min-height: 100dvh;
+  height: 100%;
+}
+
+body {
+  font-family: 'Geist Mono Variable', 'JetBrains Mono', monospace;
+  background: oklch(0.165 0.008 250);
+  color: oklch(0.94 0.012 80);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: oklch(0.3 0.012 250); border-radius: 3px; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+button { -webkit-appearance: none; appearance: none; cursor: pointer; }

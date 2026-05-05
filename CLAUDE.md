@@ -7,7 +7,7 @@
 
 ## Docker
 - Compose file lives in the production repo folder
-- Containers: `playground-nginx-1`, `playground-nginx-staging-1`, `playground-cloudflared-1`, `playground-umami-1`, `playground-umami-db-1`
+- Containers: `playground-nginx-1`, `playground-nginx-staging-1`, `playground-cloudflared-1`, `playground-umami-1`, `playground-umami-db-1`, `playground-jobhunt-1`
 
 ## Cloudflare
 - Tunnel name: `home-server`
@@ -15,6 +15,85 @@
 - Production hostname: `saniajamil.com → http://nginx:80`
 - Staging hostname: `staging.saniajamil.com → http://nginx-staging:80`
 - Analytics hostname: `analytics.saniajamil.com → http://umami:3000`
+
+## Job Hunt App — "naukri" (job.almari)
+- Local-only, not exposed via Cloudflare
+- Frontend: React 19 + Vite 8 (rolldown) + TypeScript 6 — `apps/jobhunt/client/`
+- Backend: Express + Node.js (node:sqlite, no ORM) — `apps/jobhunt/server/`
+- DB: SQLite, persisted in Docker volume `jobhunt-data`
+- Hostname: `job.almari` → add `127.0.0.1 job.almari` to `/etc/hosts` on each local machine
+- API ingest endpoint: `POST http://job.almari/api/jobs` (for scraper integration)
+
+### Design system
+- Pakistani truck-art aesthetic: terracotta, teal, saffron palette
+- 4 themes (Dark·Vault, Warm·Bazaar, Light·Parchment, Dusk·Charagh) — runtime-switched via ThemeContext, persisted in localStorage
+- Colors in oklch() for perceptual uniformity
+- Inline styles with theme objects (not Tailwind classes) — lets SVG motifs receive color props directly
+- Motifs: Medallion (phool), OrnamentStrip (triangle bands), SnowFloral, TriangleBand — `src/components/motifs.tsx`
+- Font: Geist Mono Variable
+
+### Vite 8 / rolldown gotcha — CRITICAL
+Rolldown enforces strict ES module named exports at runtime. TypeScript interfaces and type aliases compile away, so:
+- **Always use `import type { Foo }` for interfaces, type aliases, and enums**
+- Never use inline `import('...').TypeName` in type positions — rolldown may treat it as a runtime dynamic import
+- This affects all files: `api/index.ts`, `pages/Board.tsx`, `pages/Docs.tsx`, `lib/rung/engine.ts`, `lib/rung/ai.ts`, etc.
+
+### Feature: Rupee wallet
+- Earn ₨ by doing job-hunt actions (log job +10, advance status +15, interview +50, offer +200)
+- Daily check-in bonus with streak multiplier: 1× (1–2 days), 1.5× (3–6 days), 2× (7+ days)
+- Single-row wallet table (id=1) in SQLite — `server/src/routes/wallet.ts`
+- Context: `src/context/WalletContext.tsx` — exposes `earn(action)`, `settle(bet, won)`, `toast`
+- Toast: bottom-right slideUp, shows breakdown (action + daily bonus)
+
+### Feature: Rung card game
+- Full Pakistani Rung (4-player 2v2 trick-taking): You vs 3 rule-based AI bots
+- Zero API cost — deterministic rule-based AI (`src/lib/rung/ai.ts`)
+- Bet ₨ before each game; win → +bet, lose → -bet (via `POST /api/wallet/rung`)
+- Files: `src/lib/rung/cards.ts`, `engine.ts`, `ai.ts`, `src/components/rung/CardView.tsx`, `src/pages/Rung.tsx`
+- 4 screens: Bet → Call Rung (pick trump) → Play → Result
+
+### API routes
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/api/wallet` | Balance, streak, multiplier |
+| POST | `/api/wallet/earn` | Award rupees for job-hunt action |
+| POST | `/api/wallet/rung` | Settle rung bet (win/lose) |
+| POST | `/api/jobs` | Ingest job from scraper |
+| GET | `/api/jobs` | List jobs with filters |
+| PUT | `/api/jobs/:id` | Update job (status change, etc.) |
+| GET | `/api/stats` | Dashboard stats |
+| GET/POST | `/api/documents` | CV / cover letter docs |
+| GET/POST | `/api/cv-versions` | CV version history |
+
+### Roadmap
+**Phase 1 — Polish (next)**
+- [ ] Rung: better table layout, animate card plays, show last trick
+- [ ] Rung: AI trump-calling should also consider void suits (defensive play)
+- [ ] Wallet: show history of earnings in a log panel
+- [ ] Dashboard: streak graph / activity heatmap
+
+**Phase 2 — Low friction capture**
+- [ ] Browser extension: right-click any job posting → save to naukri (sends to `POST /api/jobs`)
+- [ ] Extension fills: company, title, URL, auto-detects location from page text
+- [ ] Quick-add modal accessible via keyboard shortcut
+
+**Phase 3 — Intelligence**
+- [ ] AI cover letter draft: paste JD → get tailored draft referencing your CV versions
+- [ ] Job match score: compare JD keywords against your skills
+- [ ] Weekly digest email: activity summary, streak status, upcoming follow-ups
+
+**Phase 4 — Expose externally (optional)**
+- [ ] Auth (single-user password or passkey) before exposing via Cloudflare
+- [ ] Mobile-friendly layout for on-the-go logging
+
+### Dev (local Mac)
+```bash
+# Terminal 1 — server on :3001
+cd apps/jobhunt/server && npm run dev
+
+# Terminal 2 — client on :5173 (proxied to :3001)
+cd apps/jobhunt/client && npm run dev
+```
 
 ## Common commands
 ```bash
@@ -25,8 +104,12 @@ docker exec playground-nginx-1 nginx -s reload
 cd ~/home_server/playground
 docker compose up -d
 
+# Rebuild jobhunt after code change
+docker compose up -d --build jobhunt
+
 # Check logs
 docker logs playground-nginx-1 --tail 20
 docker logs playground-cloudflared-1 --tail 10
 docker logs playground-umami-1 --tail 20
+docker logs playground-jobhunt-1 --tail 20
 ```
