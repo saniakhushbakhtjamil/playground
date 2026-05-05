@@ -52,7 +52,7 @@ services:
 
   cloudflared:
     image: cloudflare/cloudflared:latest
-    command: tunnel --no-autoupdate run --token eyJhIjoiM2ZhNjQ0ZWRiNjc5OWIwNDNiMzNmODgwMTFmNGNmYTIiLCJ0IjoiNzE1MmQ5M2MtYjA5Yi00OGMzLWI3ZjItMTNlYTY3ZTJhNjBlIiwicyI6IllXTTJPR1UzT0RjdE1HTmhaaTAwWlRNNUxXRTJOekV0Wm1FeE9UazFZVGhpTWpVeiJ9
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
       - nginx
       - nginx-staging
