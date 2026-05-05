@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { getStats } from "../api";
-import type { Stats, JobStatus } from "../types";
-import { Briefcase, TrendingUp, Star, Clock } from "lucide-react";
+import { getStats, getHeatmap } from "../api";
+import type { Stats, JobStatus, Heatmap as HeatmapData } from "../types";
+import { Briefcase, TrendingUp, Star, Clock, Flame } from "lucide-react";
 import { OrnamentStrip, SnowFloral } from "../components/motifs";
 import { useTheme } from "../context/ThemeContext";
+import { useWallet } from "../context/WalletContext";
 
 const STATUS_LABELS: Record<JobStatus, string> = {
   saved: "Saved", applying: "Applying", applied: "Applied",
@@ -12,9 +13,14 @@ const STATUS_LABELS: Record<JobStatus, string> = {
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [heat, setHeat] = useState<HeatmapData | null>(null);
   const t = useTheme();
+  const { wallet } = useWallet();
 
-  useEffect(() => { getStats().then(setStats).catch(console.error); }, []);
+  useEffect(() => {
+    getStats().then(setStats).catch(console.error);
+    getHeatmap(98).then(setHeat).catch(console.error); // 14 weeks
+  }, []);
 
   const mono = { fontFamily: "'Geist Mono Variable', monospace" } as const;
   const labelStyle = { ...mono, fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: t.muted, fontWeight: 500 };
@@ -93,6 +99,25 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Activity heatmap */}
+        {heat && (
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ ...labelStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <SnowFloral size={10} color={t.accent} />
+                activity · last {heat.days} days
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: t.warm, textTransform: 'none', letterSpacing: 0 }}>
+                <Flame size={11} />
+                <span style={{ ...mono, fontSize: 11, fontWeight: 500 }}>{wallet.streak}d streak · {wallet.multiplier}×</span>
+              </span>
+            </div>
+            <div style={{ ...card, padding: '16px 18px' }}>
+              <Heatmap data={heat} t={t} />
+            </div>
+          </div>
+        )}
+
         {/* Recent activity */}
         <div>
           <div style={{ ...labelStyle, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
@@ -132,6 +157,94 @@ export default function Dashboard() {
           </div>
         </div>
 
+      </div>
+    </div>
+  );
+}
+
+function Heatmap({ data, t }: { data: HeatmapData; t: ReturnType<typeof useTheme> }) {
+  const mono = { fontFamily: "'Geist Mono Variable', monospace" } as const;
+  const cell = 11;
+  const gap = 3;
+
+  // Pad start so first column begins on Sunday
+  const first = new Date(data.series[0].date + "T00:00:00");
+  const padStart = first.getDay(); // 0=Sun
+  const padded: ({ date: string; count: number } | null)[] =
+    Array(padStart).fill(null).concat(data.series);
+  while (padded.length % 7 !== 0) padded.push(null);
+
+  const weeks: (typeof padded)[] = [];
+  for (let i = 0; i < padded.length; i += 7) weeks.push(padded.slice(i, i + 7));
+
+  const max = Math.max(1, ...data.series.map((d) => d.count));
+  const colorFor = (count: number): string => {
+    if (count === 0) return t.borderSubtle;
+    const ratio = count / max;
+    if (ratio > 0.75) return t.accent;       // saffron — hottest
+    if (ratio > 0.5)  return t.warm;          // terracotta
+    if (ratio > 0.25) return t.cool;          // teal
+    return t.cool + '60';                     // faint teal
+  };
+
+  const monthLabels: { col: number; label: string }[] = [];
+  weeks.forEach((w, ci) => {
+    const firstReal = w.find((d) => d);
+    if (!firstReal) return;
+    const d = new Date(firstReal.date + "T00:00:00");
+    if (d.getDate() <= 7) {
+      monthLabels.push({ col: ci, label: d.toLocaleString('en', { month: 'short' }).toLowerCase() });
+    }
+  });
+
+  const dayLabels = ['m', 'w', 'f'];
+  const dayLabelRows = [1, 3, 5];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ display: 'flex', gap: 6 }}>
+        {/* Day-of-week labels */}
+        <div style={{ display: 'grid', gridTemplateRows: `repeat(7, ${cell}px)`, gap, paddingTop: 14 }}>
+          {Array.from({ length: 7 }).map((_, r) => (
+            <div key={r} style={{ ...mono, fontSize: 8, color: t.muted, height: cell, lineHeight: `${cell}px` }}>
+              {dayLabelRows.includes(r) ? dayLabels[dayLabelRows.indexOf(r)] : ''}
+            </div>
+          ))}
+        </div>
+        <div>
+          {/* Month labels */}
+          <div style={{ position: 'relative', height: 12, marginBottom: 2 }}>
+            {monthLabels.map(({ col, label }) => (
+              <span key={col} style={{
+                position: 'absolute', left: col * (cell + gap),
+                ...mono, fontSize: 8, color: t.muted, letterSpacing: '0.1em', textTransform: 'uppercase',
+              }}>
+                {label}
+              </span>
+            ))}
+          </div>
+          {/* Grid */}
+          <div style={{ display: 'grid', gridAutoFlow: 'column', gridTemplateRows: `repeat(7, ${cell}px)`, gap }}>
+            {padded.map((d, i) => (
+              <div
+                key={i}
+                title={d ? `${d.date} · ${d.count} action${d.count === 1 ? '' : 's'}` : ''}
+                style={{
+                  width: cell, height: cell, borderRadius: 2,
+                  background: d ? colorFor(d.count) : 'transparent',
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+      {/* Legend */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end', marginTop: 4 }}>
+        <span style={{ ...mono, fontSize: 9, color: t.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>less</span>
+        {[t.borderSubtle, t.cool + '60', t.cool, t.warm, t.accent].map((c, i) => (
+          <div key={i} style={{ width: cell, height: cell, borderRadius: 2, background: c }} />
+        ))}
+        <span style={{ ...mono, fontSize: 9, color: t.muted, letterSpacing: '0.1em', textTransform: 'uppercase' }}>more</span>
       </div>
     </div>
   );

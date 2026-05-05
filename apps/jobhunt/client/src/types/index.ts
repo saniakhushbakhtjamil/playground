@@ -51,3 +51,6 @@ export interface Stats {
   avgMatchScore: number | null;
   recentActivity: Pick<Job, "id" | "title" | "company" | "status" | "updated_at">[];
 }
+
+export interface HeatmapPoint { date: string; count: number; }
+export interface Heatmap { days: number; series: HeatmapPoint[]; }

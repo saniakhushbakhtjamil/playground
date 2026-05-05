@@ -1,4 +1,4 @@
-import type { Job, JobStatus, JobDocument, DocumentType, CvVersion, Stats } from "../types";
+import type { Job, JobStatus, JobDocument, DocumentType, CvVersion, Stats, Heatmap } from "../types";
 
 const BASE = "/api";
 
@@ -48,3 +48,4 @@ export const deleteCvVersion = (id: string) =>
 
 // Stats
 export const getStats = () => req<Stats>("/stats");
+export const getHeatmap = (days = 90) => req<Heatmap>(`/stats/heatmap?days=${days}`);
