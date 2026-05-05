@@ -16,13 +16,13 @@
 - Staging hostname: `staging.saniajamil.com → http://nginx-staging:80`
 - Analytics hostname: `analytics.saniajamil.com → http://umami:3000`
 
-## Job Hunt App — "naukri" (job.almari)
+## Job Hunt App — "naukri" (naukri.almari)
 - Local-only, not exposed via Cloudflare
 - Frontend: React 19 + Vite 8 (rolldown) + TypeScript 6 — `apps/jobhunt/client/`
 - Backend: Express + Node.js (node:sqlite, no ORM) — `apps/jobhunt/server/`
 - DB: SQLite, persisted in Docker volume `jobhunt-data`
-- Hostname: `job.almari` → add `127.0.0.1 job.almari` to `/etc/hosts` on each local machine
-- API ingest endpoint: `POST http://job.almari/api/jobs` (for scraper integration)
+- Hostname: `naukri.almari` → add `127.0.0.1 naukri.almari` to `/etc/hosts` on each local machine
+- API ingest endpoint: `POST http://naukri.almari/api/jobs` (for scraper integration)
 
 ### Design system
 - Pakistani truck-art aesthetic: terracotta, teal, saffron palette
@@ -114,7 +114,7 @@ ssh almari "cd ~/home_server/playground && git pull && docker compose up -d --bu
 ssh almari "docker exec playground-nginx-1 nginx -s reload"
 ```
 
-> **Access**: add `127.0.0.1 job.almari` to `/etc/hosts` on each local machine, then visit http://job.almari
+> **Access**: add `127.0.0.1 naukri.almari` to `/etc/hosts` on each local machine, then visit http://naukri.almari
 
 ## Common commands
 ```bash
