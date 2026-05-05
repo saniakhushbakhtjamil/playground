@@ -21,8 +21,10 @@
 - Frontend: React 19 + Vite 8 (rolldown) + TypeScript 6 — `apps/jobhunt/client/`
 - Backend: Express + Node.js (node:sqlite, no ORM) — `apps/jobhunt/server/`
 - DB: SQLite, persisted in Docker volume `jobhunt-data`
-- Hostname: `naukri.almari` → add `127.0.0.1 naukri.almari` to `/etc/hosts` on each local machine
-- API ingest endpoint: `POST http://naukri.almari/api/jobs` (for scraper integration)
+- Routed via traefik on almari (`traefik-public` network, labels in `docker-compose.yml`) directly to `jobhunt:3001` — no nginx hop
+- Hostname: `naukri.almari` → add `<almari-LAN-IP> naukri.almari` to `/etc/hosts` on each local machine (not `127.0.0.1` — traefik runs on almari)
+- HTTPS via the local `*.almari` self-signed wildcard cert; trust `/opt/almari/repo/stacks/traefik/certs/rootCA.pem` once
+- API ingest endpoint: `POST https://naukri.almari/api/jobs` (for scraper integration)
 
 ### Design system
 - Pakistani truck-art aesthetic: terracotta, teal, saffron palette
@@ -114,7 +116,7 @@ ssh almari "cd ~/home_server/playground && git pull && docker compose up -d --bu
 ssh almari "docker exec playground-nginx-1 nginx -s reload"
 ```
 
-> **Access**: add `127.0.0.1 naukri.almari` to `/etc/hosts` on each local machine, then visit http://naukri.almari
+> **Access**: add `<almari-LAN-IP> naukri.almari` to `/etc/hosts` on each local machine, then visit https://naukri.almari
 
 ## Common commands
 ```bash
