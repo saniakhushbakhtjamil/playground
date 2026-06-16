@@ -1,0 +1,51 @@
+name: Sync resume from Google Doc
+
+# Weekly: pull the latest export of the canonical Google Doc into resume.pdf.
+# The Doc is the source of truth — edit it in Google Docs and this keeps the
+# site's downloadable PDF current with no manual steps. Runs on a GitHub-hosted
+# runner so it fires even when the self-hosted deploy box is offline. When it
+# commits a change, the Deploy workflow runs afterward (via workflow_run) to
+# publish it.
+#
+# Requires the Doc to stay shared "Anyone with the link can view" so the public
+# export endpoint works without auth.
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"   # Mondays 07:00 UTC, weekly
+  workflow_dispatch: {}     # allow manual runs from the Actions tab
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-resume
+  cancel-in-progress: false
+
+jobs:
+  sync-resume:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Export resume from the Google Doc
+        run: node scripts/sync-resume.mjs
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- resume.pdf; then
+            echo "resume.pdf unchanged — nothing to commit"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add resume.pdf
+            git commit -m "chore: weekly resume sync from Google Doc"
+            git push
+            echo "Pushed updated resume.pdf"
+          fi

@@ -4,9 +4,18 @@ on:
   push:
     branches:
       - main
+  # Pushes made by the weekly resume-sync job use GITHUB_TOKEN, which does not
+  # re-trigger `push` workflows. Fire deploy when that workflow completes so the
+  # refreshed resume.pdf still gets published.
+  workflow_run:
+    workflows: ["Sync resume from Google Doc"]
+    types:
+      - completed
 
 jobs:
   deploy:
+    # On direct pushes always; on the sync chain only if the sync succeeded.
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: self-hosted
     defaults:
       run:
