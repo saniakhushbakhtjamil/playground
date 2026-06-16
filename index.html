@@ -3,582 +3,445 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sania Jamil</title>
+  <title>Sania Jamil — Technical PM who builds</title>
+  <meta name="description" content="Things I've built — side projects, AI prototypes, and internal tools. PM who ships code." />
   <script defer src="https://analytics.saniajamil.com/script.js" data-website-id="175c4c60-56b9-42c6-80a1-1745f94aec68"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #fafafa;
-      --text: #111;
-      --muted: #666;
-      --border: #e5e5e5;
+      --bg:      #0b0e14;
+      --panel:   #11151f;
+      --panel-2: #0e121b;
+      --border:  #1d2433;
+      --border-2:#2a3346;
+      --text:    #c9d3df;
+      --muted:   #6b7588;
+      --dim:     #4a5365;
+      --accent:  #5eead4;   /* teal — prompt / structure */
+      --demo:    #38bdf8;   /* cyan — live / linkable */
+      --case:    #fbbf24;   /* amber — internal */
+      --green:   #4ade80;
+      --red:     #f87171;
     }
 
+    html { scrollbar-color: var(--border-2) var(--bg); }
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      background:
+        radial-gradient(1200px 600px at 85% -10%, rgba(56,189,248,0.06), transparent 60%),
+        radial-gradient(900px 500px at 0% 0%, rgba(94,234,212,0.05), transparent 55%),
+        var(--bg);
       color: var(--text);
-      font-size: 14px;
+      font-size: 13.5px;
       line-height: 1.6;
-    }
-
-    a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
-    a:hover { color: var(--muted); }
-
-    /* ── TWO-COLUMN LAYOUT ── */
-    .layout {
-      display: grid;
-      grid-template-columns: 220px 1fr;
       min-height: 100vh;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 0 32px;
-      gap: 64px;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      padding: 48px 0;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      border-right: 1px solid var(--border);
-      padding-right: 40px;
-    }
-    .sidebar .name {
-      font-size: 15px;
-      font-weight: 500;
-      text-decoration: none;
-      margin-bottom: 4px;
-      display: block;
-    }
-    .sidebar .role {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
-    .sidebar .bio {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.65;
-      margin-bottom: 32px;
-    }
-    .available {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 32px;
-    }
-    .dot {
-      width: 6px; height: 6px;
-      background: #4ade80;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .sidebar nav {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: auto;
-    }
-    .sidebar nav a {
-      font-size: 13px;
-      color: var(--muted);
-      text-decoration: none;
-      padding: 4px 0;
-    }
-    .sidebar nav a:hover { color: var(--text); }
-    .sidebar-contact {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-    }
-    .sidebar-contact a {
-      font-size: 12px;
-      color: var(--muted);
-      text-decoration: none;
-    }
-    .sidebar-contact a:hover { color: var(--text); }
+    a { color: inherit; text-decoration: none; }
 
-    /* ── MAIN ── */
-    .main {
-      padding: 48px 0;
-    }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 40px 24px 80px; }
 
-    /* SECTION */
-    section {
-      padding: 40px 0;
-      border-top: 1px solid var(--border);
+    /* ── TERMINAL WINDOW ── */
+    .term {
+      background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 24px 60px -24px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.02);
+      overflow: hidden;
     }
-    section:first-child { border-top: none; padding-top: 0; }
-    .section-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
-
-    /* HERO (now just the intro text in main) */
-    .intro h1 {
-      font-size: 22px;
-      font-weight: 400;
-      letter-spacing: -0.3px;
-      margin-bottom: 10px;
-      line-height: 1.3;
-    }
-    .intro p {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    /* FEED */
-    .feed { display: flex; flex-direction: column; }
-    .feed-item {
-      display: grid;
-      grid-template-columns: 72px 1fr;
-      gap: 0 16px;
-      padding: 12px 0;
+    .term-bar {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.015);
     }
-    .feed-item:last-child { border-bottom: none; }
-    .feed-date {
-      font-size: 11px;
-      color: var(--muted);
-      padding-top: 2px;
-    }
-    .feed-title {
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 3px;
-    }
-    .feed-desc {
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .tag {
-      display: inline-block;
-      font-size: 10px;
-      background: #efefef;
-      color: #555;
-      padding: 2px 7px;
-      border-radius: 20px;
-      margin-top: 6px;
-    }
+    .lights { display: flex; gap: 7px; }
+    .lights i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+    .lights i:nth-child(1){ background:#ff5f56; }
+    .lights i:nth-child(2){ background:#ffbd2e; }
+    .lights i:nth-child(3){ background:#27c93f; }
+    .term-title { font-size: 11.5px; color: var(--dim); letter-spacing: 0.03em; }
+    .term-title b { color: var(--muted); font-weight: 500; }
 
-    /* PROJECTS */
-    .projects { display: flex; flex-direction: column; }
-    .project-item {
+    .term-body { padding: 26px 26px 30px; }
+
+    /* prompt header */
+    .prompt { font-size: 13px; margin-bottom: 4px; }
+    .prompt .user { color: var(--green); }
+    .prompt .path { color: var(--demo); }
+    .prompt .tilde { color: var(--muted); }
+    .prompt .cmd { color: var(--text); }
+    .cursor {
+      display: inline-block; width: 8px; height: 15px;
+      background: var(--accent); vertical-align: -2px; margin-left: 2px;
+      animation: blink 1.1s steps(1) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .lead { margin: 18px 0 4px; }
+    .lead h1 { font-size: 21px; font-weight: 700; letter-spacing: -0.4px; color: #f3f6fa; }
+    .lead h1 .pipe { color: var(--accent); font-weight: 400; }
+    .lead p { color: var(--muted); font-size: 12.5px; margin-top: 8px; max-width: 62ch; }
+    .lead .meta { color: var(--dim); font-size: 11.5px; margin-top: 12px; }
+    .lead .meta b { color: var(--muted); font-weight: 500; }
+
+    .eyebrow { font-size: 12px; color: var(--muted); margin-bottom: 14px; letter-spacing: 0.01em; }
+    .eyebrow b { color: var(--text); font-weight: 700; }
+    .eyebrow .sep { color: var(--dim); margin: 0 8px; }
+    .adot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 0 3px rgba(74,222,128,0.14);
+      margin-right: 6px; vertical-align: 1px;
+    }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .action {
+      font-size: 12px; color: var(--text);
+      border: 1px solid var(--border-2); border-radius: 7px;
+      padding: 7px 13px; transition: all .15s ease;
+    }
+    .action:hover { border-color: var(--accent); color: var(--accent); }
+    .action.primary {
+      background: var(--accent); color: var(--bg);
+      border-color: var(--accent); font-weight: 700;
+    }
+    .action.primary:hover { filter: brightness(1.08); color: var(--bg); }
+
+    /* ── FILTER BAR ── */
+    .filters {
+      display: flex; align-items: center; gap: 8px;
+      margin: 26px 0 22px; flex-wrap: wrap;
+    }
+    .filters .label { color: var(--dim); font-size: 11.5px; margin-right: 4px; }
+    .chip {
+      font: inherit; font-size: 11.5px; cursor: pointer;
+      color: var(--muted); background: transparent;
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 5px 13px; transition: all .15s ease;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .chip:hover { color: var(--text); border-color: var(--border-2); }
+    .chip.active { color: var(--bg); background: var(--accent); border-color: var(--accent); font-weight: 700; }
+    .chip .n { opacity: .6; }
+    .chip.active .n { opacity: .8; }
+
+    /* ── GRID ── */
+    .grid {
       display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: start;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 16px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
     }
-    .project-item:last-child { border-bottom: none; }
-    .project-name {
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 3px;
-    }
-    .project-name a { text-decoration: none; }
-    .project-name a:hover { text-decoration: underline; }
-    .project-desc { font-size: 12px; color: var(--muted); }
-    .project-stack { font-size: 11px; color: #aaa; margin-top: 4px; }
-    .project-link {
-      font-size: 12px;
-      color: var(--muted);
-      text-decoration: none;
-      white-space: nowrap;
-      padding-top: 2px;
-    }
-    .project-link:hover { color: var(--text); }
-
-    /* Resume */
-    .cv-section { margin-bottom: 28px; }
-    .cv-section:last-child { margin-bottom: 0; }
-    .cv-section-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-    .cv-job { margin-bottom: 20px; }
-    .cv-job:last-child { margin-bottom: 0; }
-    .cv-job-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 4px;
-    }
-    .cv-job-title {
-      font-size: 13px;
-      font-weight: 500;
-    }
-    .cv-job-date {
-      font-size: 11px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-    .cv-job-company {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-    .cv-job ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .cv-job ul li {
-      font-size: 12px;
-      color: #444;
-      padding-left: 14px;
+    .card {
       position: relative;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 18px 16px;
+      display: flex; flex-direction: column;
+      min-height: 192px;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
     }
-    .cv-job ul li::before {
-      content: '–';
-      position: absolute;
-      left: 0;
-      color: var(--muted);
+    .card::before {
+      content: ""; position: absolute; left: 0; top: 14px; bottom: 14px;
+      width: 2px; border-radius: 2px; background: var(--border-2);
+      transition: background .16s ease;
     }
-    .cv-skills-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+    .card.t-demo::before { background: var(--demo); }
+    .card.t-case::before { background: var(--case); }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-2);
+      box-shadow: 0 18px 40px -22px rgba(0,0,0,0.8);
     }
-    .cv-skill-group-title {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-    .cv-skill-group ul {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .cv-skill-group ul li { font-size: 12px; color: #444; }
-    .cv-two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    .cv-item-title { font-size: 13px; font-weight: 500; }
-    .cv-item-sub { font-size: 12px; color: var(--muted); }
 
-    /* ── MOBILE FALLBACK ── */
-    @media (max-width: 700px) {
-      .layout {
-        grid-template-columns: 1fr;
-        gap: 0;
-        padding: 0 20px;
-      }
-      .sidebar {
-        position: static;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        padding: 32px 0;
-        padding-right: 0;
-      }
-      .main { padding: 32px 0; }
+    .card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; }
+    .badge { font-size: 10px; letter-spacing: 0.04em; padding: 2px 7px; border-radius: 5px; font-weight: 700; }
+    .badge.demo { color: var(--demo); background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.25); }
+    .badge.case { color: var(--case); background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.22); }
+    .year { font-size: 11px; color: var(--dim); }
+
+    .card h2 { font-size: 15.5px; font-weight: 700; color: #eef2f7; letter-spacing: -0.2px; }
+    .card .blurb { font-size: 12px; color: var(--muted); margin-top: 7px; line-height: 1.55; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }
+    .tags span {
+      font-size: 10px; color: var(--text);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      padding: 2px 7px; border-radius: 4px;
+    }
+
+    .card-foot {
+      margin-top: auto; padding-top: 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .status { font-size: 11px; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+    .status .d { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status.shipped .d { background: var(--green); box-shadow: 0 0 0 3px rgba(74,222,128,0.12); }
+    .status.draft .d   { background: var(--case); box-shadow: 0 0 0 3px rgba(251,191,36,0.12); }
+
+    .open {
+      font-size: 11.5px; font-weight: 700; color: var(--demo);
+      border: 1px solid rgba(56,189,248,0.3); border-radius: 6px;
+      padding: 5px 11px; transition: all .15s ease;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .open:hover { background: var(--demo); color: var(--bg); border-color: var(--demo); }
+    .open.repo { color: var(--muted); border-color: var(--border-2); }
+    .open.repo:hover { background: var(--border-2); color: var(--text); }
+    .internal { font-size: 10.5px; color: var(--dim); letter-spacing: 0.02em; }
+
+    /* ── FOOTER ── */
+    .foot {
+      margin-top: 30px; padding-top: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+      font-size: 11.5px; color: var(--dim);
+    }
+    .foot a { color: var(--muted); border-bottom: 1px solid transparent; transition: all .15s; }
+    .foot a:hover { color: var(--demo); border-color: var(--demo); }
+    .foot .links { display: flex; gap: 18px; }
+
+    @media (max-width: 560px) {
+      .wrap { padding: 24px 14px 60px; }
+      .term-body { padding: 20px 16px 24px; }
+      .grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-
-  <div class="layout">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <a class="name" href="#">Sania Jamil</a>
-      <span class="role">Technical Product Manager</span>
-      <p class="bio">I'm a PM with a CS background who still likes to build things. Most of my career has been in payments, insurance, and SaaS at Electrolux. I spend my evenings coding whatever I wish existed.</p>
-      <div class="available" style="flex-direction:column;align-items:flex-start;gap:2px;">
-        <div style="display:flex;align-items:center;gap:7px;">
-          <span class="dot"></span>
-          Open to new roles
-        </div>
-        <div style="padding-left:13px;color:#aaa;">Sweden · Remote across EU</div>
-      </div>
-      <nav>
-        <a href="#building">Currently building</a>
-        <a href="#projects">Projects</a>
-        <a href="#resume">Resume</a>
-        <a href="#contact">Contact</a>
-      </nav>
-      <div class="sidebar-contact">
-        <a href="https://github.com/saniakhushbakhtjamil" target="_blank" rel="noopener">GitHub ↗</a>
-        <a href="https://www.linkedin.com/in/saniakjamil" target="_blank" rel="noopener">LinkedIn ↗</a>
-        <a href="mailto:saniak.jamil@gmail.com">saniak.jamil@gmail.com</a>
-        <a href="resume.pdf" download style="margin-top:8px;font-weight:500;color:var(--text);">↓ Download Resume</a>
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <div class="main">
-
-    <section class="intro" style="border-top:none; padding-top:0;">
-      <h1>PM who can build.<br/>Developer who ships.</h1>
-      <p>I've spent 6 years leading product at Electrolux, mostly in payments, insurance, and SaaS. I have a CS degree and I still write code. Right now I'm looking for a PM or Senior PO role where the technical side actually matters.</p>
-    </section>
-
-    <!-- FEED: what I'm working on -->
-    <section id="building">
-      <p class="section-label">Prototypes & side projects</p>
-      <div class="feed">
-
-        <div class="feed-item">
-          <span class="feed-date">Mar 2026</span>
-          <div class="feed-content">
-            <div class="feed-title">JobHunter</div>
-            <div class="feed-desc">Job searching is repetitive and honestly pretty soul-crushing. So I built an agent that does the searching, scoring, and applying for me. It pings me on Slack before it submits anything, so I stay in control.</div>
-            <span class="tag">Python · LangGraph · Claude API · Playwright · Slack</span>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <span class="feed-date">Feb 2026</span>
-          <div class="feed-content">
-            <div class="feed-title">RiffMaster</div>
-            <div class="feed-desc">I play guitar and wanted tabs that don't assume you're already good. Built a full-stack app with a 3-step AI pipeline that takes a song name and spits out something a beginner can actually play. Did the API, frontend, and Docker setup myself.</div>
-            <span class="tag">React · Node.js · TypeScript · Docker · Redis</span>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <span class="feed-date">Jan 2026</span>
-          <div class="feed-content">
-            <div class="feed-title">TeachMeEasy</div>
-            <div class="feed-desc">A friend and I kept giving up on songs because the chords were too hard. So I built an app that reads a chord sheet PDF and gives you three versions of it, from easy to original. There's a practice mode and a play-along mode. It runs on my home server.</div>
-            <span class="tag">Python · Claude API · Home server</span>
-          </div>
-        </div>
-
-        <div class="feed-item">
-          <span class="feed-date">Dec 2025</span>
-          <div class="feed-content">
-            <div class="feed-title">TabScrub</div>
-            <div class="feed-desc">Downloading guitar tabs one by one got old fast. Built a CLI that logs in, grabs everything in bulk, skips duplicates, and picks up where it left off if it crashes. Added a dashboard so I could see what I'd collected. Runs across multiple machines via NAS.</div>
-            <span class="tag">Node.js · Playwright</span>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- PROJECTS -->
-    <section id="projects">
-      <p class="section-label">Projects</p>
-      <div class="projects">
-
-        <div class="project-item">
-          <div>
-            <div class="project-name">
-              <a href="https://github.com/saniakhushbakhtjamil/jobhunter" target="_blank" rel="noopener">JobHunter</a>
-            </div>
-            <div class="project-desc">AI agent that finds and applies to jobs for you. Built it solo while job hunting. Felt like the right thing to do.</div>
-            <div class="project-stack">Python · LangGraph · Claude · Slack</div>
-          </div>
-          <a class="project-link" href="https://github.com/saniakhushbakhtjamil/jobhunter" target="_blank" rel="noopener">↗ GitHub</a>
-        </div>
-
-        <div class="project-item">
-          <div>
-            <div class="project-name">
-              <a href="https://github.com/saniakhushbakhtjamil/riffmaster" target="_blank" rel="noopener">RiffMaster</a>
-            </div>
-            <div class="project-desc">Enter a song, get beginner-friendly guitar tabs back. Full-stack, containerised, built and deployed solo.</div>
-            <div class="project-stack">React · Node.js · TypeScript · Docker · Redis</div>
-          </div>
-          <a class="project-link" href="https://github.com/saniakhushbakhtjamil/riffmaster" target="_blank" rel="noopener">↗ GitHub</a>
-        </div>
-
-        <div class="project-item">
-          <div>
-            <div class="project-name">
-              <a href="https://github.com/saniakhushbakhtjamil/teachMeEasy" target="_blank" rel="noopener">TeachMeEasy</a>
-            </div>
-            <div class="project-desc">Simplifies any guitar chord sheet into easy, medium, or original. Built for two beginners who kept giving up on songs.</div>
-            <div class="project-stack">Python · Claude API · Home server</div>
-          </div>
-          <a class="project-link" href="https://github.com/saniakhushbakhtjamil/teachMeEasy" target="_blank" rel="noopener">↗ GitHub</a>
-        </div>
-
-        <div class="project-item">
-          <div>
-            <div class="project-name">
-              <a href="https://github.com/saniakhushbakhtjamil/TabScrub" target="_blank" rel="noopener">TabScrub</a>
-            </div>
-            <div class="project-desc">Bulk downloads guitar tabs from Ultimate Guitar. Built because doing it manually was tedious.</div>
-            <div class="project-stack">Node.js · Playwright</div>
-          </div>
-          <a class="project-link" href="https://github.com/saniakhushbakhtjamil/TabScrub" target="_blank" rel="noopener">↗ GitHub</a>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- Resume -->
-    <section id="resume">
-      <p class="section-label">Resume</p>
-
-      <!-- Experience -->
-      <div class="cv-section">
-        <div class="cv-section-title">Experience</div>
-
-        <div class="cv-job">
-          <div class="cv-job-header">
-            <span class="cv-job-title">Senior Product Owner, Sales, Payments &amp; Insurance</span>
-            <span class="cv-job-date">Sep 2023 – Present</span>
-          </div>
-          <div class="cv-job-company">Electrolux, Sweden</div>
-          <ul>
-            <li>Led the product for a B2B/B2C sales platform used by contact centres across Europe and North America, covering insurance, service contracts, and payments</li>
-            <li>Moved the platform from V1 to V2: cut operational overhead by 40%, got dev teams shipping 30% faster, and roughly halved time-to-market</li>
-            <li>Launched payments with Klarna, Adyen, Stripe, and Cash; used dynamic pricing and lifecycle flows to improve retention by around 10%</li>
-            <li>Moved 3 countries in one quarter, then ran a 4-country rollout simultaneously, coordinating engineering, UX, ops, and commercial teams across different time zones</li>
-            <li>Built working AI prototypes (a fraud detection tool, a chargeback flow) to show stakeholders what was possible rather than just describing it</li>
-            <li>Trained an LLM on our product docs so it could answer team questions. Saved a lot of back-and-forth.</li>
-          </ul>
-        </div>
-
-        <div class="cv-job">
-          <div class="cv-job-header">
-            <span class="cv-job-title">Delivery Lead / Transformation Manager (IFS ERP)</span>
-            <span class="cv-job-date">Oct 2024 – Apr 2025</span>
-          </div>
-          <div class="cv-job-company">Munters, Sweden</div>
-          <ul>
-            <li>Led end-to-end IFS ERP rollout for Czech manufacturing site, driving adoption of standardized global processes</li>
-            <li>Designed a repeatable rollout framework later adopted for Sweden and US implementations</li>
-            <li>Applied process mining to identify bottlenecks and optimize rollout efficiency</li>
-          </ul>
-        </div>
-
-        <div class="cv-job">
-          <div class="cv-job-header">
-            <span class="cv-job-title">Solutions Engineer & Solution Delivery</span>
-            <span class="cv-job-date">Sep 2020 – Aug 2023</span>
-          </div>
-          <div class="cv-job-company">Electrolux, Sweden</div>
-          <ul>
-            <li>Led discovery and solution engineering for appointment booking and payment via web channel</li>
-            <li>Coordinated multi-team delivery for synchronized 4-country rollout</li>
-            <li>Used KPIs, incident data, and adoption signals to prioritize enhancement backlog</li>
-          </ul>
-        </div>
-
-        <div class="cv-job">
-          <div class="cv-job-header">
-            <span class="cv-job-title">Software Engineer</span>
-            <span class="cv-job-date">Jun 2018 – Mar 2020</span>
-          </div>
-          <div class="cv-job-company">VentureDive, Pakistan</div>
-          <ul>
-            <li>Developed front-end and back-end features for healthcare and supply chain platforms</li>
-          </ul>
-        </div>
+  <div class="wrap">
+    <main class="term">
+      <div class="term-bar">
+        <span class="lights"><i></i><i></i><i></i></span>
+        <span class="term-title"><b>sania</b>@portfolio: <b>~/projects</b> — zsh</span>
       </div>
 
-      <!-- Skills -->
-      <div class="cv-section" style="padding-top:20px;border-top:1px solid var(--border);">
-        <div class="cv-section-title">Skills</div>
-        <div class="cv-skills-grid">
-          <div class="cv-skill-group">
-            <div class="cv-skill-group-title">Product</div>
-            <ul>
-              <li>Product Discovery</li>
-              <li>Roadmapping</li>
-              <li>Backlog Prioritization</li>
-              <li>KPI Definition & Tracking</li>
-              <li>User Research</li>
-            </ul>
+      <div class="term-body">
+        <div class="prompt">
+          <span class="user">sania</span><span class="tilde">@portfolio</span>:<span class="path">~/projects</span>$
+          <span class="cmd"> ls --sort=impact</span><span class="cursor"></span>
+        </div>
+
+        <div class="lead">
+          <p class="eyebrow">
+            <b>Sania Jamil</b><span class="sep">·</span>Technical Product Manager<span class="sep">·</span>
+            <span class="adot"></span>open to roles — Sweden / remote across EU
+          </p>
+          <h1>Things I've built <span class="pipe">|</span> not just specced</h1>
+          <p>
+            I'm a technical PM who still ships code on evenings and weekends. Below: live side
+            projects you can dig into, plus internal prototypes I built at Electrolux to show
+            stakeholders what was possible instead of just describing it.
+          </p>
+          <p class="meta">
+            <b id="stat-total">0</b> projects ·
+            <span style="color:var(--demo)">●</span> <b id="stat-demo">0</b> open to explore ·
+            <span style="color:var(--case)">●</span> <b id="stat-case">0</b> internal case studies
+          </p>
+          <div class="actions">
+            <a class="action primary" href="resume.pdf" download>↓ résumé.pdf</a>
+            <a class="action" href="about.html">about &amp; experience →</a>
+            <a class="action" href="https://github.com/saniakhushbakhtjamil" target="_blank" rel="noopener">github ↗</a>
+            <a class="action" href="https://www.linkedin.com/in/saniakjamil" target="_blank" rel="noopener">linkedin ↗</a>
           </div>
-          <div class="cv-skill-group">
-            <div class="cv-skill-group-title">Agile & Leadership</div>
-            <ul>
-              <li>Scrum, Kanban, SAFe</li>
-              <li>Cross-functional Leadership</li>
-              <li>Stakeholder Alignment</li>
-              <li>Global Rollouts</li>
-            </ul>
-          </div>
-          <div class="cv-skill-group">
-            <div class="cv-skill-group-title">Technical</div>
-            <ul>
-              <li>API Architecture</li>
-              <li>Systems Integration</li>
-              <li>SQL / Analytics</li>
-              <li>React, JavaScript</li>
-              <li>AI-Driven Development</li>
-            </ul>
-          </div>
+        </div>
+
+        <div class="filters" role="tablist" aria-label="Filter projects">
+          <span class="label">filter:</span>
+          <button class="chip active" data-filter="all">all <span class="n" id="c-all">0</span></button>
+          <button class="chip" data-filter="demo">demos <span class="n" id="c-demo">0</span></button>
+          <button class="chip" data-filter="case">case studies <span class="n" id="c-case">0</span></button>
+        </div>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="foot">
+          <span>built solo · vanilla HTML/JS · no framework</span>
+          <span class="links">
+            <a href="about.html">about &amp; résumé →</a>
+            <a href="resume.pdf" download>résumé.pdf ↓</a>
+            <a href="https://github.com/saniakhushbakhtjamil" target="_blank" rel="noopener">GitHub ↗</a>
+            <a href="https://www.linkedin.com/in/saniakjamil" target="_blank" rel="noopener">LinkedIn ↗</a>
+          </span>
         </div>
       </div>
+    </main>
+  </div>
 
-      <!-- Education & Certs -->
-      <div class="cv-section" style="padding-top:20px;border-top:1px solid var(--border);">
-        <div class="cv-section-title">Education & Certifications</div>
-        <div class="cv-two-col">
-          <div>
-            <div class="cv-item-title">BS Computer Science</div>
-            <div class="cv-item-sub">GIK Institute, Pakistan · 2018 · CGPA 3.44</div>
+  <script>
+    // ─────────────────────────────────────────────────────────────
+    //  PROJECT DATA
+    //  type "demo" = public link available (live URL and/or public repo) → Open button
+    //  type "case" = internal / private — no public link, by design
+    //  Order = best/most interactive demos first, case studies after.
+    // ─────────────────────────────────────────────────────────────
+    const projects = [
+      {
+        id: "riffmaster",
+        name: "RiffMaster",
+        year: "2026",
+        blurb: "Type in a song and artist, get beginner-friendly guitar tabs back through a 3-step pipeline (analysis → composition → guitarisation). Full-stack TypeScript monorepo I built and containerised end-to-end.",
+        tags: ["React", "Node.js", "TypeScript"],
+        type: "demo",
+        status: "draft",
+        href: "",
+        repo: "https://github.com/saniakhushbakhtjamil/riffmaster"
+      },
+      {
+        id: "learnai",
+        name: "LearnAI",
+        year: "2026",
+        blurb: "A 12-week shared AI-learning tracker for two people on different devices, with progress synced through a backend running on my home server. Built with the Almari design kit.",
+        tags: ["Express", "React", "SQLite"],
+        type: "demo",
+        status: "shipped",
+        href: "",
+        repo: "https://github.com/saniakhushbakhtjamil/LearnAI"
+      },
+      {
+        id: "sangat",
+        name: "Sangat",
+        year: "2026",
+        blurb: "A browser jam pad for live guitar — loop a tempo-synced bed of drums and synths, then play over it through my amp. Deliberately not a looper: it never touches the guitar signal, so there's no latency to fight. Think GarageBand Live Loops, stripped down.",
+        tags: ["JavaScript", "Tone.js", "Web Audio"],
+        type: "demo",
+        status: "draft",
+        href: "",
+        repo: "https://github.com/saniakhushbakhtjamil/Sangat"
+      },
+      {
+        id: "bhagorobo",
+        name: "BhagoRobo",
+        year: "2026",
+        blurb: "A mobile game I'm building in Unity with C# — wired up with the Universal Render Pipeline and Unity's new Input System for touch controls. Early-stage, learning game dev one scene at a time.",
+        tags: ["Unity", "C#", "Mobile"],
+        type: "demo",
+        status: "draft",
+        href: "",
+        repo: "https://github.com/saniakhushbakhtjamil/BhagoRobo"
+      },
+      {
+        id: "jobhunter",
+        name: "JobHunter",
+        year: "2026",
+        blurb: "An autonomous agent that searches, scores, and applies to jobs for me — and pings me on Slack to approve anything before it submits, so I stay in control. Built it solo while job hunting.",
+        tags: ["Python", "LangGraph", "Claude API"],
+        type: "case",
+        status: "shipped",
+        href: "",
+        repo: ""
+      },
+      {
+        id: "gris",
+        name: "GRIS",
+        year: "2026",
+        blurb: "A personalised \"Morning Brief\" news app, built with a friend. A daily pipeline pulls RSS from mainstream and fringe sources, extracts entities and links related stories, then generates a digest tailored to each reader. Runs every morning on my home server.",
+        tags: ["FastAPI", "React", "Claude API"],
+        type: "case",
+        status: "shipped",
+        href: "",
+        repo: ""
+      },
+      {
+        id: "tolkarr",
+        name: "Tolkarr",
+        year: "2026",
+        blurb: "A self-hosted downloader for SVT Play and other Nordic public broadcasters that auto-generates English subtitles with Whisper. Arr-style dashboard, VPN-routed, runs on my home server.",
+        tags: ["Python", "Whisper", "Docker"],
+        type: "case",
+        status: "shipped",
+        href: "",
+        repo: ""
+      },
+      {
+        id: "knowledge-po",
+        name: "Knowledge PO",
+        year: "2023–25",
+        blurb: "Trained an LLM on our product documentation at Electrolux so the team could self-serve answers instead of pinging the PO. Cut a lot of repetitive back-and-forth.",
+        tags: ["LLM", "RAG", "Internal tooling"],
+        type: "case",
+        status: "shipped",
+        href: "",
+        repo: ""
+      },
+      {
+        id: "chargeback",
+        name: "Chargeback Flow",
+        year: "2023–25",
+        blurb: "A prototype automating the payment chargeback / dispute flow at Electrolux — a tangible demo that moved a stakeholder conversation from \"maybe\" to \"let's scope it\".",
+        tags: ["AI", "Payments", "Prototype"],
+        type: "case",
+        status: "draft",
+        href: "",
+        repo: ""
+      }
+    ];
+
+    // ─────────────────────────────────────────────────────────────
+    //  RENDER
+    // ─────────────────────────────────────────────────────────────
+    const grid = document.getElementById("grid");
+    const esc = (s) => s.replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]));
+
+    function cardHTML(p) {
+      const link = p.href || p.repo;
+      const isLive = !!p.href;
+      let action;
+      if (p.type === "demo" && link) {
+        const label = isLive ? "open ↗" : "view repo ↗";
+        const cls = isLive ? "open" : "open repo";
+        action = `<a class="${cls}" href="${esc(link)}" target="_blank" rel="noopener">${label}</a>`;
+      } else {
+        action = `<span class="internal">internal · no public link</span>`;
+      }
+      const tags = p.tags.map(t => `<span>${esc(t)}</span>`).join("");
+      const statusLabel = p.status === "shipped" ? "shipped" : "prototype";
+      return `
+        <article class="card t-${p.type}" data-type="${p.type}">
+          <div class="card-top">
+            <span class="badge ${p.type}">${p.type === "demo" ? "[demo]" : "[case]"}</span>
+            <span class="year">${esc(p.year)}</span>
           </div>
-          <div>
-            <div class="cv-item-title">SAFe Release Train Engineer</div>
-            <div class="cv-item-sub">SAFe · 2023</div>
+          <h2>${esc(p.name)}</h2>
+          <p class="blurb">${esc(p.blurb)}</p>
+          <div class="tags">${tags}</div>
+          <div class="card-foot">
+            <span class="status ${p.status}"><span class="d"></span>${statusLabel}</span>
+            ${action}
           </div>
-          <div>
-            <div class="cv-item-title">IBM Product Owner</div>
-            <div class="cv-item-sub">Coursera · 2025</div>
-          </div>
-        </div>
-      </div>
+        </article>`;
+    }
 
-    </section>
+    function render(filter) {
+      const list = filter === "all" ? projects : projects.filter(p => p.type === filter);
+      grid.innerHTML = list.map(cardHTML).join("");
+    }
 
-    <!-- CONTACT -->
-    <section id="contact">
-      <p class="section-label">Contact</p>
-      <div class="contact-links" style="display:flex;flex-direction:column;gap:10px;">
-        <div style="display:grid;grid-template-columns:72px 1fr;gap:16px;font-size:13px;">
-          <span style="color:var(--muted);font-size:12px;">GitHub</span>
-          <a href="https://github.com/saniakhushbakhtjamil" target="_blank" rel="noopener">saniakhushbakhtjamil</a>
-        </div>
-        <div style="display:grid;grid-template-columns:72px 1fr;gap:16px;font-size:13px;">
-          <span style="color:var(--muted);font-size:12px;">LinkedIn</span>
-          <a href="https://www.linkedin.com/in/saniakjamil" target="_blank" rel="noopener">saniakjamil</a>
-        </div>
-        <div style="display:grid;grid-template-columns:72px 1fr;gap:16px;font-size:13px;">
-          <span style="color:var(--muted);font-size:12px;">Email</span>
-          <a href="mailto:saniak.jamil@gmail.com">saniak.jamil@gmail.com</a>
-        </div>
-      </div>
-    </section>
+    // counts
+    const nDemo = projects.filter(p => p.type === "demo").length;
+    const nCase = projects.filter(p => p.type === "case").length;
+    document.getElementById("stat-total").textContent = projects.length;
+    document.getElementById("stat-demo").textContent  = nDemo;
+    document.getElementById("stat-case").textContent  = nCase;
+    document.getElementById("c-all").textContent  = projects.length;
+    document.getElementById("c-demo").textContent = nDemo;
+    document.getElementById("c-case").textContent = nCase;
 
-    <footer style="padding:32px 0 48px;border-top:1px solid var(--border);">
-      <p style="font-size:12px;color:var(--muted);">Sania Khushbakht Jamil &mdash; 2026</p>
-    </footer>
+    // filter interactions
+    document.querySelectorAll(".chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        render(chip.dataset.filter);
+      });
+    });
 
-    </div><!-- /main -->
-  </div><!-- /layout -->
-
+    render("all");
+  </script>
 </body>
 </html>

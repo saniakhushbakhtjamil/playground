@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sania Jamil — About &amp; Résumé</title>
+  <script defer src="https://analytics.saniajamil.com/script.js" data-website-id="175c4c60-56b9-42c6-80a1-1745f94aec68"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafafa;
+      --text: #111;
+      --muted: #666;
+      --border: #e5e5e5;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+    a:hover { color: var(--muted); }
+
+    /* ── TWO-COLUMN LAYOUT ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      min-height: 100vh;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 32px;
+      gap: 64px;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      padding: 48px 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      padding-right: 40px;
+    }
+    .sidebar .name {
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .sidebar .role {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .sidebar .bio {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 32px;
+    }
+    .available {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    .dot {
+      width: 6px; height: 6px;
+      background: #4ade80;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .sidebar nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: auto;
+    }
+    .sidebar nav a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 4px 0;
+    }
+    .sidebar nav a:hover { color: var(--text); }
+    .sidebar-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .sidebar-contact a {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .sidebar-contact a:hover { color: var(--text); }
+
+    /* ── MAIN ── */
+    .main {
+      padding: 48px 0;
+    }
+
+    /* SECTION */
+    section {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+    }
+    section:first-child { border-top: none; padding-top: 0; }
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    /* HERO (now just the intro text in main) */
+    .intro h1 {
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .intro p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* FEED */
+    .feed { display: flex; flex-direction: column; }
+    .feed-item {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 0 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-date {
+      font-size: 11px;
+      color: var(--muted);
+      padding-top: 2px;
+    }
+    .feed-title {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+    .feed-desc {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      background: #efefef;
+      color: #555;
+      padding: 2px 7px;
+      border-radius: 20px;
+      margin-top: 6px;
+    }
+
+    /* PROJECTS */
+    .projects { display: flex; flex-direction: column; }
+    .project-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .project-item:last-child { border-bottom: none; }
+    .project-name {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+    .project-name a { text-decoration: none; }
+    .project-name a:hover { text-decoration: underline; }
+    .project-desc { font-size: 12px; color: var(--muted); }
+    .project-stack { font-size: 11px; color: #aaa; margin-top: 4px; }
+    .project-link {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      white-space: nowrap;
+      padding-top: 2px;
+    }
+    .project-link:hover { color: var(--text); }
+
+    /* Resume */
+    .cv-section { margin-bottom: 28px; }
+    .cv-section:last-child { margin-bottom: 0; }
+    .cv-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .cv-job { margin-bottom: 20px; }
+    .cv-job:last-child { margin-bottom: 0; }
+    .cv-job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+    .cv-job-title {
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .cv-job-date {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .cv-job-company {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .cv-job ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .cv-job ul li {
+      font-size: 12px;
+      color: #444;
+      padding-left: 14px;
+      position: relative;
+    }
+    .cv-job ul li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--muted);
+    }
+    .cv-skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .cv-skill-group-title {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .cv-skill-group ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .cv-skill-group ul li { font-size: 12px; color: #444; }
+    .cv-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .cv-item-title { font-size: 13px; font-weight: 500; }
+    .cv-item-sub { font-size: 12px; color: var(--muted); }
+
+    /* ── MOBILE FALLBACK ── */
+    @media (max-width: 700px) {
+      .layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+        padding: 0 20px;
+      }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 32px 0;
+        padding-right: 0;
+      }
+      .main { padding: 32px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a class="name" href="/">Sania Jamil</a>
+      <span class="role">Technical Product Manager</span>
+      <p class="bio">I'm a PM with a CS background who still likes to build things. Most of my career has been in payments, insurance, and SaaS at Electrolux. I spend my evenings coding whatever I wish existed.</p>
+      <div class="available" style="flex-direction:column;align-items:flex-start;gap:2px;">
+        <div style="display:flex;align-items:center;gap:7px;">
+          <span class="dot"></span>
+          Open to new roles
+        </div>
+        <div style="padding-left:13px;color:#aaa;">Sweden · Remote across EU</div>
+      </div>
+      <nav>
+        <a href="/">← Projects</a>
+        <a href="#resume">Resume</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="sidebar-contact">
+        <a href="https://github.com/saniakhushbakhtjamil" target="_blank" rel="noopener">GitHub ↗</a>
+        <a href="https://www.linkedin.com/in/saniakjamil" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a href="mailto:saniak.jamil@gmail.com">saniak.jamil@gmail.com</a>
+        <a href="resume.pdf" download style="margin-top:8px;font-weight:500;color:var(--text);">↓ Download Resume</a>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+
+    <section class="intro" style="border-top:none; padding-top:0;">
+      <h1>PM who can build.<br/>Developer who ships.</h1>
+      <p>I've spent 6 years leading product at Electrolux, mostly in payments, insurance, and SaaS. I have a CS degree and I still write code. Right now I'm looking for a PM or Senior PO role where the technical side actually matters.</p>
+    </section>
+
+    <!-- Resume -->
+    <section id="resume">
+      <p class="section-label">Resume</p>
+
+      <!-- Experience -->
+      <div class="cv-section">
+        <div class="cv-section-title">Experience</div>
+
+        <div class="cv-job">
+          <div class="cv-job-header">
+            <span class="cv-job-title">Senior Product Owner, Sales, Payments &amp; Insurance</span>
+            <span class="cv-job-date">Sep 2023 – Present</span>
+          </div>
+          <div class="cv-job-company">Electrolux, Sweden</div>
+          <ul>
+            <li>Led the product for a B2B/B2C sales platform used by contact centres across Europe and North America, covering insurance, service contracts, and payments</li>
+            <li>Moved the platform from V1 to V2: cut operational overhead by 40%, got dev teams shipping 30% faster, and roughly halved time-to-market</li>
+            <li>Launched payments with Klarna, Adyen, Stripe, and Cash; used dynamic pricing and lifecycle flows to improve retention by around 10%</li>
+            <li>Moved 3 countries in one quarter, then ran a 4-country rollout simultaneously, coordinating engineering, UX, ops, and commercial teams across different time zones</li>
+            <li>Built working AI prototypes (a fraud detection tool, a chargeback flow) to show stakeholders what was possible rather than just describing it</li>
+            <li>Trained an LLM on our product docs so it could answer team questions. Saved a lot of back-and-forth.</li>
+          </ul>
+        </div>
+
+        <div class="cv-job">
+          <div class="cv-job-header">
+            <span class="cv-job-title">Delivery Lead / Transformation Manager (IFS ERP)</span>
+            <span class="cv-job-date">Oct 2024 – Apr 2025</span>
+          </div>
+          <div class="cv-job-company">Munters, Sweden</div>
+          <ul>
+            <li>Led end-to-end IFS ERP rollout for Czech manufacturing site, driving adoption of standardized global processes</li>
+            <li>Designed a repeatable rollout framework later adopted for Sweden and US implementations</li>
+            <li>Applied process mining to identify bottlenecks and optimize rollout efficiency</li>
+          </ul>
+        </div>
+
+        <div class="cv-job">
+          <div class="cv-job-header">
+            <span class="cv-job-title">Solutions Engineer & Solution Delivery</span>
+            <span class="cv-job-date">Sep 2020 – Aug 2023</span>
+          </div>
+          <div class="cv-job-company">Electrolux, Sweden</div>
+          <ul>
+            <li>Led discovery and solution engineering for appointment booking and payment via web channel</li>
+            <li>Coordinated multi-team delivery for synchronized 4-country rollout</li>
+            <li>Used KPIs, incident data, and adoption signals to prioritize enhancement backlog</li>
+          </ul>
+        </div>
+
+        <div class="cv-job">
+          <div class="cv-job-header">
+            <span class="cv-job-title">Software Engineer</span>
+            <span class="cv-job-date">Jun 2018 – Mar 2020</span>
+          </div>
+          <div class="cv-job-company">VentureDive, Pakistan</div>
+          <ul>
+            <li>Developed front-end and back-end features for healthcare and supply chain platforms</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="cv-section" style="padding-top:20px;border-top:1px solid var(--border);">
+        <div class="cv-section-title">Skills</div>
+        <div class="cv-skills-grid">
+          <div class="cv-skill-group">
+            <div class="cv-skill-group-title">Product</div>
+            <ul>
+              <li>Product Discovery</li>
+              <li>Roadmapping</li>
+              <li>Backlog Prioritization</li>
+              <li>KPI Definition & Tracking</li>
+              <li>User Research</li>
+            </ul>
+          </div>
+          <div class="cv-skill-group">
+            <div class="cv-skill-group-title">Agile & Leadership</div>
+            <ul>
+              <li>Scrum, Kanban, SAFe</li>
+              <li>Cross-functional Leadership</li>
+              <li>Stakeholder Alignment</li>
+              <li>Global Rollouts</li>
+            </ul>
+          </div>
+          <div class="cv-skill-group">
+            <div class="cv-skill-group-title">Technical</div>
+            <ul>
+              <li>API Architecture</li>
+              <li>Systems Integration</li>
+              <li>SQL / Analytics</li>
+              <li>React, JavaScript</li>
+              <li>AI-Driven Development</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Education & Certs -->
+      <div class="cv-section" style="padding-top:20px;border-top:1px solid var(--border);">
+        <div class="cv-section-title">Education & Certifications</div>
+        <div class="cv-two-col">
+          <div>
+            <div class="cv-item-title">BS Computer Science</div>
+            <div class="cv-item-sub">GIK Institute, Pakistan · 2018 · CGPA 3.44</div>
+          </div>
+          <div>
+            <div class="cv-item-title">SAFe Release Train Engineer</div>
+            <div class="cv-item-sub">SAFe · 2023</div>
+          </div>
+          <div>
+            <div class="cv-item-title">IBM Product Owner</div>
+            <div class="cv-item-sub">Coursera · 2025</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <p class="section-label">Contact</p>
+      <div class="contact-links" style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:grid;grid-template-columns:72px 1fr;gap:16px;font-size:13px;">
+          <span style="color:var(--muted);font-size:12px;">GitHub</span>
+          <a href="https://github.com/saniakhushbakhtjamil" target="_blank" rel="noopener">saniakhushbakhtjamil</a>
+        </div>
+        <div style="display:grid;grid-template-columns:72px 1fr;gap:16px;font-size:13px;">
+          <span style="color:var(--muted);font-size:12px;">LinkedIn</span>
+          <a href="https://www.linkedin.com/in/saniakjamil" target="_blank" rel="noopener">saniakjamil</a>
+        </div>
+        <div style="display:grid;grid-template-columns:72px 1fr;gap:16px;font-size:13px;">
+          <span style="color:var(--muted);font-size:12px;">Email</span>
+          <a href="mailto:saniak.jamil@gmail.com">saniak.jamil@gmail.com</a>
+        </div>
+      </div>
+    </section>
+
+    <footer style="padding:32px 0 48px;border-top:1px solid var(--border);">
+      <p style="font-size:12px;color:var(--muted);">Sania Khushbakht Jamil &mdash; 2026</p>
+    </footer>
+
+    </div><!-- /main -->
+  </div><!-- /layout -->
+
+</body>
+</html>
