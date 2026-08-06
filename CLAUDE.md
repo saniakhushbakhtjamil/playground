@@ -1,25 +1,38 @@
 # Server & Infrastructure Notes
 
 ## Linux Home Server (almari)
-- Production repo: `~/home_server/playground` (main branch)
-- Staging repo: `~/home_server/staging` (staging branch)
-- OS: Linux
+- Hosted on almari as an **external repo** (see almari `docs/external-repos.md`): cloned to
+  `/opt/almari/external/playground`, checked out on `main`. OS: Linux.
+- **Deploy model = cron auto-poll, not a GitHub Actions runner.** `/home/agent/scripts/deploy-playground.sh`
+  runs every 5 min via the `agent` crontab: fetches `origin/main`, and on a new commit runs
+  `git pull --ff-only && docker compose up -d --build`. Logs → `/home/agent/logs/playground-deploy.log`.
+  The script is **guarded** — it skips deploying until `CLOUDFLARE_TUNNEL_TOKEN` is set in `.env`.
+- History: previously served by a Windows self-hosted GitHub Actions runner; migrated to the almari
+  external-repo model. The old `deploy.yml` / `deploy-staging.yml` workflows were removed.
 
 ## Docker
-- Compose file lives in the production repo folder
-- Containers: `playground-nginx-1`, `playground-nginx-staging-1`, `playground-cloudflared-1`, `playground-umami-1`, `playground-umami-db-1`, `playground-jobhunt-1`
+- Compose file lives at the repo root (`docker-compose.yml`). Compose project name = the dir basename
+  (`playground`), so containers are `playground-nginx-1`, `playground-nginx-staging-1`,
+  `playground-cloudflared-1`, `playground-jobhunt-1`.
+- **Umami was removed** — the analytics service is decommissioned (almari `app-registry.md`; teardown
+  tracked in Almari #334). The `umami` / `umami-db` services are no longer in the compose file.
 
 ## Cloudflare
 - Tunnel name: `home-server`
 - Tunnel ID: `7152d93c-b09b-48c3-b7f2-13ea67e2a60e`
-- Tunnel token: lives in `.env` on almari (`CLOUDFLARE_TUNNEL_TOKEN`), referenced from `docker-compose.yml`. `.env` is gitignored — see `.env.example` for the variable name.
+- Tunnel token: lives in `.env` at `/opt/almari/external/playground/.env` (`CLOUDFLARE_TUNNEL_TOKEN`),
+  referenced from `docker-compose.yml`. `.env` is gitignored — see `.env.example` for the variable name.
 - Production hostname: `saniajamil.com → http://nginx:80`
 - Staging hostname: `staging.saniajamil.com → http://nginx-staging:80`
-- Analytics hostname: `analytics.saniajamil.com → http://umami:3000`
+- Analytics: **removed** (Umami decommissioned). Repoint site analytics to a live instance before
+  re-adding any `analytics.*` script tag.
 
 ## Tech debt — do later
-- **Rotate & externalise remaining cleartext secrets in `docker-compose.yml`**: `umami-db` `POSTGRES_PASSWORD` (line 39) and `umami` `APP_SECRET` (line 48) are still hardcoded. Move both to `.env` on almari (same pattern as `CLOUDFLARE_TUNNEL_TOKEN`) and reference via `${VAR}` in compose. Note: rotating `APP_SECRET` invalidates existing umami sessions; rotating the DB password requires updating both `umami-db` env and the `DATABASE_URL` in `umami` env in lockstep.
-- **Scrub old Cloudflare tunnel token from git history**: token at the pre-rotation `docker-compose.yml:55` is invalidated but still in history. Use `git filter-repo` and force-push if/when we want it gone.
+- **Scrub old Cloudflare tunnel token from git history**: token at the pre-rotation `docker-compose.yml:55`
+  is invalidated but still in history. Use `git filter-repo` and force-push if/when we want it gone.
+- **Repoint web analytics**: the pages' `analytics.saniajamil.com` script points at the decommissioned
+  Umami. Swap in a live analytics URL + website ID (or Cloudflare Web Analytics) in `index.html` +
+  `about.html`, or drop the tag.
 
 ## Job Hunt App — "naukri" (naukri.almari)
 - Local-only, not exposed via Cloudflare
@@ -112,24 +125,30 @@ cd apps/jobhunt/client && npm run dev
 ```
 
 ### Deploy to almari
-```bash
-# From local Mac — push, pull on server, rebuild container
-git push origin main
-ssh almari "cd ~/home_server/playground && git pull && docker compose up -d --build jobhunt"
+Deploy is automatic — just push to `main`. The `agent` crontab on almari polls `origin/main`
+every 5 min and runs `git pull --ff-only && docker compose up -d --build` when it advances.
 
-# Reload nginx if nginx.conf changed
-ssh almari "docker exec playground-nginx-1 nginx -s reload"
+```bash
+# Normal path: push and wait up to ~5 min for the cron to deploy
+git push origin main
+
+# Force an immediate deploy (agent on almari)
+ssh agent@192.168.50.11 -p 2222 "/home/agent/scripts/deploy-playground.sh"
+
+# Tail the deploy log
+ssh agent@192.168.50.11 -p 2222 "tail -20 /home/agent/logs/playground-deploy.log"
 ```
 
 > **Access**: add `<almari-LAN-IP> naukri.almari` to `/etc/hosts` on each local machine, then visit https://naukri.almari
 
 ## Common commands
+All run on almari as `agent`, from `/opt/almari/external/playground`.
 ```bash
 # Restart nginx after config change
 docker exec playground-nginx-1 nginx -s reload
 
 # Bring up all containers
-cd ~/home_server/playground
+cd /opt/almari/external/playground
 docker compose up -d
 
 # Rebuild jobhunt after code change
@@ -138,6 +157,5 @@ docker compose up -d --build jobhunt
 # Check logs
 docker logs playground-nginx-1 --tail 20
 docker logs playground-cloudflared-1 --tail 10
-docker logs playground-umami-1 --tail 20
 docker logs playground-jobhunt-1 --tail 20
 ```
