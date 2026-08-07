@@ -93,6 +93,8 @@ The Dockerfile runs `tsc` with full strictness. Local `vite dev` is more lenient
 | GET | `/api/stats` | Dashboard stats |
 | GET/POST | `/api/documents` | CV / cover letter docs |
 | GET/POST | `/api/cv-versions` | CV version history |
+| POST | `/api/access-requests` | Portfolio repo/demo access request (PUBLIC — proxied by portfolio nginx, POST-only, rate-limited 5r/m) |
+| GET/PUT | `/api/access-requests` | List / set status (new·approved·dismissed) — naukri "Requests" page; approval itself = manual GitHub collaborator invite |
 
 ### Roadmap
 **Phase 1 — Polish (next)**
@@ -144,8 +146,10 @@ ssh agent@192.168.50.11 -p 2222 "tail -20 /home/agent/logs/playground-deploy.log
 ## Common commands
 All run on almari as `agent`, from `/opt/almari/external/playground`.
 ```bash
-# Restart nginx after config change
-docker exec playground-nginx-1 nginx -s reload
+# After changing nginx/nginx.conf you MUST force-recreate the container.
+# `nginx -s reload` is NOT enough: git pull replaces the file's inode, and the
+# single-file bind mount keeps serving the old content inside the container.
+docker compose up -d --force-recreate nginx
 
 # Bring up all containers
 cd /opt/almari/external/playground
