@@ -2,115 +2,115 @@
 
 Personal portfolio and project feed. Live at [saniajamil.com](https://saniajamil.com).
 
-## Environments
+## What's here
 
-| Branch | URL | Purpose |
-|--------|-----|---------|
-| `main` | [saniajamil.com](https://saniajamil.com) | Production |
-| `staging` | [staging.saniajamil.com](https://staging.saniajamil.com) | Preview before merging |
+| Path | What it is |
+|------|-----------|
+| `index.html` | Home page — a terminal-style project grid (demos + case studies), rendered from a `projects` array in the page |
+| `about.html` | About & Résumé — bio, experience, skills, education, contact |
+| `resume.pdf` | Downloadable résumé, synced from a Google Doc (see below) |
+| `nginx/` | nginx configs for production + staging |
+| `docker-compose.yml` | The stack (nginx, cloudflared, jobhunt) |
+| `apps/jobhunt/` | "naukri" job-hunt app — local-only at `naukri.almari` (see `CLAUDE.md`) |
+| `scripts/sync-resume.mjs` | Pulls the latest résumé export from the Google Doc |
+| `.github/workflows/sync-resume.yml` | Weekly résumé auto-sync |
 
 ## Stack
 
-- Static HTML/CSS — no frameworks
+- Static HTML/CSS/JS — no framework, no build step
 - Nginx (Docker) — serves the files
-- Cloudflare Tunnel — public access without port forwarding, free SSL
-- GitHub Actions (self-hosted runner) — auto-deploys on every push
-- Umami — self-hosted analytics at `analytics.saniajamil.com`
+- Cloudflare Tunnel (`home-server`) — public access without port forwarding, free SSL
+- Deployed on **almari** (Linux home server) as an external repo, auto-deployed by a 5-min cron
 
-## Infrastructure
+## Deploy
 
-```
-Mac (dev)
-  → GitHub
-    ├── push to main     → Runner → git pull → nginx restart (if needed) → saniajamil.com
-    └── push to staging  → Runner → git pull → nginx-staging restart     → staging.saniajamil.com
-
-Umami analytics → analytics.saniajamil.com (always on, same server)
-```
-
-## CI/CD Pipeline
+**Just push to `main`.** saniajamil.com is hosted on almari as an external repo
+(`/opt/almari/external/playground`). The `agent` crontab polls `origin/main` every 5 minutes
+and rebuilds when it advances — there is no GitHub Actions deploy step.
 
 ```mermaid
 sequenceDiagram
     participant You as You (Mac)
     participant GitHub
-    participant Runner as GitHub Actions Runner (Windows)
-    participant Docker as Docker (Windows)
+    participant Cron as almari cron (agent, */5)
+    participant Docker as Docker (almari)
     participant CF as Cloudflare
     participant Visitor
 
-    You->>GitHub: git push origin main (or staging)
-    GitHub->>Runner: trigger deploy job
-
-    Runner->>Runner: git pull origin main (or staging)
-
-    alt nginx/nginx.conf changed
-        Runner->>Docker: docker compose restart nginx
-    else docker-compose.yml changed
-        Runner->>Docker: docker compose up -d
-    else HTML/assets changed
-        Runner->>Runner: no restart needed, files live instantly
+    You->>GitHub: git push origin main
+    loop every 5 min
+        Cron->>GitHub: git fetch origin/main
     end
+    Note over Cron: skips until CLOUDFLARE_TUNNEL_TOKEN is set in .env
+    Cron->>Docker: on new commit → git pull --ff-only && docker compose up -d --build
 
-    Visitor->>CF: visits saniajamil.com (or staging.saniajamil.com)
-    CF->>Docker: routes via Cloudflare Tunnel
-    Note over Docker: nginx → saniajamil.com<br/>nginx-staging → staging.saniajamil.com
+    Visitor->>CF: visits saniajamil.com
+    CF->>Docker: home_server tunnel → cloudflared → nginx:80
     Docker->>Visitor: serves portfolio
-    Docker->>Docker: umami records the visit
 ```
+
+Deploy script: `/home/agent/scripts/deploy-playground.sh` on almari
+(logs → `/home/agent/logs/playground-deploy.log`). Force an immediate deploy or tail the log:
+
+```bash
+ssh agent@192.168.50.11 -p 2222 "/home/agent/scripts/deploy-playground.sh"
+ssh agent@192.168.50.11 -p 2222 "tail -20 /home/agent/logs/playground-deploy.log"
+```
+
+## Résumé — sourced from a Google Doc
+
+The Google Doc is the source of truth. `resume.pdf` is its exported PDF, refreshed by
+`scripts/sync-resume.mjs`. A GitHub Actions workflow (`sync-resume.yml`) runs **weekly** on a
+GitHub-hosted runner, commits `resume.pdf` if it changed, and pushes to `main` — the almari cron
+then publishes it. Run it by hand anytime:
+
+```bash
+node scripts/sync-resume.mjs
+```
+
+The Doc must stay shared "Anyone with the link can view" for the public export to work.
 
 ## Docker containers
 
 | Container | Image | Purpose |
 |-----------|-------|---------|
-| `playground-nginx-1` | nginx:alpine | Serves production files |
-| `playground-nginx-staging-1` | nginx:alpine | Serves staging files |
-| `playground-cloudflared-1` | cloudflare/cloudflared | Cloudflare Tunnel |
-| `playground-umami-1` | umami:postgresql-latest | Analytics dashboard |
-| `playground-umami-db-1` | postgres:15-alpine | Umami database |
+| `playground-nginx-1` | nginx:alpine | Serves production files (`saniajamil.com`) |
+| `playground-nginx-staging-1` | nginx:alpine | Serves staging files (`staging.saniajamil.com`) |
+| `playground-cloudflared-1` | cloudflare/cloudflared | Cloudflare Tunnel connector |
+| `playground-jobhunt-1` | built from `apps/jobhunt` | naukri job-hunt app (`naukri.almari`, local-only) |
 
-## Server setup
+> Analytics (Umami) was **decommissioned** and removed from the stack. Re-add a live analytics tag
+> in `index.html` + `about.html` before pointing any `analytics.*` route at a service again.
 
-- Windows home server running Docker Desktop with WSL
-- GitHub Actions self-hosted runner (runs as a scheduled task, starts on boot)
-- Production files served from the `main` branch clone
-- Staging files served from the `staging` branch clone
+## Adding a new app at a subdomain
 
-## Branch rules
+1. Add a service to `docker-compose.yml`
+2. Add an `nginx/` config (if nginx-based) or Traefik labels (for `*.almari` local apps)
+3. Cloudflare Zero Trust → Networks → Tunnels → `home-server` → add a public hostname route → service URL
+4. Push to `main` (the cron redeploys), or run `docker compose up -d` on almari
 
-| Change type | Branch |
-|-------------|--------|
-| Content (`index.html`, `resume.pdf`, copy) | `staging` first, then merge to `main` |
-| Infrastructure (`docker-compose.yml`, nginx, workflows) | `main` directly |
+## Staging
 
-## Adding a new app
-
-To host a new app at a subdomain (e.g. `app.saniajamil.com`):
-
-1. Add a new service to `docker-compose.yml`
-2. Add a new config file in `nginx/` (if nginx-based)
-3. In Cloudflare Zero Trust → Networks → Tunnels → `home-server` → Routes → Add route → Published application → set destination and service URL
-4. Run `docker compose up -d` on the server
-
-## Troubleshooting
-
-**Subdomains return 502 after a deploy**
-
-Happens when `docker-compose.yml` changes trigger a cloudflared restart. Cloudflare briefly caches the 502s from the ~30 second reconnect window. Fix: wait 2-3 minutes and reload. If it persists, go to Cloudflare → saniajamil.com → Caching → Purge Cache → Purge Everything. For persistent cache issues, enable Development Mode (Caching → Configuration) — it bypasses all caching for 3 hours.
+`staging.saniajamil.com` is routed through the tunnel to `nginx-staging`, but there is no staging
+auto-deploy anymore (the old staging-branch runner was retired). It currently serves an empty mount
+(`../staging`) — seed that directory on almari or drop the service + route if unused.
 
 ## Security
 
-Nginx blocks access to:
-- `.git` and all hidden files/folders
-- Sensitive file types: `.json`, `.yml`, `.yaml`, `.env`, `.py`, `.sh`, `.sql`
+Nginx blocks access to `.git` / hidden files and sensitive types (`.json`, `.yml`, `.yaml`, `.env`,
+`.py`, `.sh`, `.sql`).
 
 ## Local development
 
-Open `index.html` in your browser — no build step needed.
+Open `index.html` in a browser — no build step. To exercise nginx/tunnel behavior, run the stack
+with Docker locally, or preview via a static server.
 
-## Workflow
+## Troubleshooting
 
-1. Make changes on a feature branch
-2. Push to `staging` — auto-deploys to `staging.saniajamil.com`
-3. Check it looks right
-4. Merge to `main` — auto-deploys to `saniajamil.com`
+**Public URL returns 530** — the tunnel has no healthy connector. Check the `playground-cloudflared-1`
+logs on almari for `Registered tunnel connection` (the QUIC pre-check FAILs at startup are a known
+false alarm and can be ignored if a connection registers right after). Confirm
+`CLOUDFLARE_TUNNEL_TOKEN` is set in `/opt/almari/external/playground/.env`.
+
+**Subdomain returns 502 shortly after a deploy** — cloudflared briefly reconnects when
+`docker-compose.yml` changes. Wait 1–2 minutes; if it persists, purge the Cloudflare cache.
