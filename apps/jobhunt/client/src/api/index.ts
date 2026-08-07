@@ -1,4 +1,4 @@
-import type { Job, JobStatus, JobDocument, DocumentType, CvVersion, Stats, Heatmap } from "../types";
+import type { Job, JobStatus, JobDocument, DocumentType, CvVersion, Stats, Heatmap, AccessRequest, AccessRequestStatus } from "../types";
 
 const BASE = "/api";
 
@@ -45,6 +45,11 @@ export const updateCvVersion = (id: string, data: Partial<CvVersion>) =>
   req<CvVersion>(`/cv-versions/${id}`, { method: "PATCH", body: JSON.stringify(data) });
 export const deleteCvVersion = (id: string) =>
   req<void>(`/cv-versions/${id}`, { method: "DELETE" });
+
+// Access requests (portfolio repo/demo access)
+export const getAccessRequests = () => req<AccessRequest[]>("/access-requests");
+export const updateAccessRequest = (id: string, status: AccessRequestStatus) =>
+  req<{ ok: boolean }>(`/access-requests/${id}`, { method: "PUT", body: JSON.stringify({ status }) });
 
 // Stats
 export const getStats = () => req<Stats>("/stats");

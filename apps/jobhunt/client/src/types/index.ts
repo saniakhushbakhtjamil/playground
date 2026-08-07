@@ -54,3 +54,23 @@ export interface Stats {
 
 export interface HeatmapPoint { date: string; count: number; }
 export interface Heatmap { days: number; series: HeatmapPoint[]; }
+
+export interface AccessRequestItem {
+  id: string;
+  name: string;
+  repo: boolean;
+  demo: boolean;
+}
+
+export type AccessRequestStatus = "new" | "approved" | "dismissed";
+
+export interface AccessRequest {
+  id: string;
+  name: string;
+  email: string;
+  github_username: string;
+  message: string;
+  projects: AccessRequestItem[];
+  status: AccessRequestStatus;
+  created_at: string;
+}

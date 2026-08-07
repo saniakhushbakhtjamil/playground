@@ -11,6 +11,8 @@ const jobs_1 = __importDefault(require("./routes/jobs"));
 const documents_1 = __importDefault(require("./routes/documents"));
 const cvVersions_1 = __importDefault(require("./routes/cvVersions"));
 const stats_1 = __importDefault(require("./routes/stats"));
+const wallet_1 = __importDefault(require("./routes/wallet"));
+const accessRequests_1 = __importDefault(require("./routes/accessRequests"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 const IS_PROD = process.env.NODE_ENV === "production";
@@ -20,6 +22,8 @@ app.use("/api/jobs", jobs_1.default);
 app.use("/api/documents", documents_1.default);
 app.use("/api/cv-versions", cvVersions_1.default);
 app.use("/api/stats", stats_1.default);
+app.use("/api/wallet", wallet_1.default);
+app.use("/api/access-requests", accessRequests_1.default);
 app.get("/health", (_req, res) => res.json({ ok: true }));
 if (IS_PROD) {
     const staticDir = path_1.default.resolve(__dirname, "../../client/dist");

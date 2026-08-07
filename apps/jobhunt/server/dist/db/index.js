@@ -57,5 +57,28 @@ db.exec(`
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS access_requests (
+    id              TEXT PRIMARY KEY,
+    name            TEXT NOT NULL,
+    email           TEXT NOT NULL,
+    github_username TEXT DEFAULT '',
+    message         TEXT DEFAULT '',
+    projects        TEXT NOT NULL,
+    status          TEXT DEFAULT 'new',
+    created_at      TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS wallet (
+    id                 INTEGER PRIMARY KEY,
+    balance            INTEGER NOT NULL DEFAULT 0,
+    streak_days        INTEGER NOT NULL DEFAULT 0,
+    last_activity_date TEXT
+  );
 `);
+// Ensure single wallet row exists
+const _walletRow = db.prepare("SELECT id FROM wallet WHERE id = 1").get();
+if (!_walletRow) {
+    db.prepare("INSERT INTO wallet (id, balance, streak_days) VALUES (1, 0, 0)").run();
+}
 exports.default = db;

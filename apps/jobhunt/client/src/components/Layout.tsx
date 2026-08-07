@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Columns3, FileText, Flame, Spade } from "lucide-react";
+import { LayoutDashboard, Columns3, FileText, Flame, Spade, KeyRound } from "lucide-react";
 import { Medallion, OrnamentStrip, SnowFloral } from "./motifs";
 import { useTheme, useThemeSwitcher } from "../context/ThemeContext";
 import { useWallet } from "../context/WalletContext";
@@ -9,6 +9,7 @@ const huntNav = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/board", label: "Board", icon: Columns3 },
   { to: "/docs", label: "Docs", icon: FileText },
+  { to: "/requests", label: "Requests", icon: KeyRound },
 ];
 
 const playNav = [

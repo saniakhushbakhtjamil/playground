@@ -58,6 +58,17 @@ db.exec(`
     updated_at TEXT NOT NULL
   );
 
+  CREATE TABLE IF NOT EXISTS access_requests (
+    id              TEXT PRIMARY KEY,
+    name            TEXT NOT NULL,
+    email           TEXT NOT NULL,
+    github_username TEXT DEFAULT '',
+    message         TEXT DEFAULT '',
+    projects        TEXT NOT NULL,
+    status          TEXT DEFAULT 'new',
+    created_at      TEXT NOT NULL
+  );
+
   CREATE TABLE IF NOT EXISTS wallet (
     id                 INTEGER PRIMARY KEY,
     balance            INTEGER NOT NULL DEFAULT 0,

@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - jobhunt-data:/app/data
+    environment:
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
     networks:
       - default
       - traefik-public

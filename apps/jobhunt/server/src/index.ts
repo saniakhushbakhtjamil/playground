@@ -7,6 +7,7 @@ import documentsRouter from "./routes/documents";
 import cvVersionsRouter from "./routes/cvVersions";
 import statsRouter from "./routes/stats";
 import walletRouter from "./routes/wallet";
+import accessRequestsRouter from "./routes/accessRequests";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -20,6 +21,7 @@ app.use("/api/documents", documentsRouter);
 app.use("/api/cv-versions", cvVersionsRouter);
 app.use("/api/stats", statsRouter);
 app.use("/api/wallet", walletRouter);
+app.use("/api/access-requests", accessRequestsRouter);
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
