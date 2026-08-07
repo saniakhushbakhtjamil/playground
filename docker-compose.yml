@@ -4,7 +4,8 @@ services:
       context: ./apps/jobhunt
       dockerfile: Dockerfile
     volumes:
-      - jobhunt-data:/app/data
+      # Server resolves its data dir relative to dist → /app/server/data
+      - jobhunt-data:/app/server/data
     environment:
       - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
     networks:
