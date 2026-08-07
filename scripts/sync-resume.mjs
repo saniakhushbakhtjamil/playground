@@ -14,7 +14,7 @@ import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const DOC_ID = "1IQ2zf6hZmLppXkN6F-lKzBlSPmlWLR5eePtlPNZVHw4";
+const DOC_ID = "1La6EIAYaHDeBwHNQmqV4wYNn4ToQVBfJjHZM-pCIx9I";
 const URL = `https://docs.google.com/document/d/${DOC_ID}/export?format=pdf`;
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "resume.pdf");
 
